@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Filtrar por Data do Fato</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        select, button { padding: 6px 10px; margin: 5px; }
+        .resultado { margin-top: 20px; font-weight: bold; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <h1>Filtrar Casos por Data do Fato</h1>
+
+    <form method="post">
+
+        <label for="mes">Mês:</label>
+        <select name="mes" id="mes">
+            {% for num, nome in meses %}
+                <option value="{{ num }}">{{ nome }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="ano">Ano:</label>
+        <select name="ano" id="ano">
+            {% for a in anos %}
+                <option value="{{ a }}">{{ a }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Buscar</button>
+    </form>
+
+    {% if resultado %}
+        <div class="resultado">{{ resultado }}</div>
+    {% endif %}
+
+    <br>
+    <a href="/"><button>Voltar</button></a>
+</body>
+</html>

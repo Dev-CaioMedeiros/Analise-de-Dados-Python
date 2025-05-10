@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gráfico - {{ categoria }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        table { margin: 0 auto; border-collapse: collapse; }
+        th, td { padding: 8px 12px; border: 1px solid #999; }
+        button { padding: 10px 15px; margin-top: 20px; }
+
+        #loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid teal;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #grafico-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Gráfico</h2>
+
+    <div id="loader"></div>
+
+    <div id="grafico-container">
+        <img id="grafico-img" src="{{ url_for('static', filename=nome_arquivo + '.png') }}?t={{ timestamp }}" alt="Gráfico">
+
+        <h3>Resumo dos Dados</h3>
+        <table>
+            <tr>
+                <th>{{ categoria }}</th>
+                <th>Casos</th>
+            </tr>
+            {% for valor, total in dados %}
+                <tr>
+                    <td>{{ valor }}</td>
+                    <td>{{ total }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <a href="/"><button>Voltar</button></a>
+    </div>
+
+    <script>
+        const img = document.getElementById('grafico-img');
+        const loader = document.getElementById('loader');
+        const container = document.getElementById('grafico-container');
+
+        img.onload = function() {
+            loader.style.display = 'none';
+            container.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

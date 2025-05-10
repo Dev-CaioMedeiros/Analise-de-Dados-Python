@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Interativo</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #333;
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ddd;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dashboard de Violência Doméstica</h1>
+    <h3>Escolha um gráfico para visualizar:</h3>
+
+    <div class="container">
+        <a href="/grafico/municipio"><button>Município do Fato</button></a>
+        <a href="/grafico/regiao"><button>Região Geográfica</button></a>
+        <a href="/grafico/natureza"><button>Natureza</button></a>
+        <a href="/grafico/data"><button>Data dos Ocorridos</button></a>
+        <a href="/grafico/ano"><button>Ano</button></a>
+        <a href="/grafico/sexo"><button>Sexo</button></a>
+        <a href="/grafico/idade"><button>Idade SENASP</button></a>
+        <a href="/grafico/envolvidos"><button>Total de Envolvidos</button></a>
+         <a href="/data"><button>Filtrar por Data do Fato</button></a>
+    </div>
+
+</body>
+</html>
