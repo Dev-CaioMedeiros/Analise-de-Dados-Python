@@ -2,37 +2,48 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Filtrar por Data do Fato</title>
+    <title>Filtrar por Dados</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         select, button { padding: 6px 10px; margin: 5px; }
         .resultado { margin-top: 20px; font-weight: bold; font-size: 18px; }
+        form { display: flex; flex-direction: column; align-items: center; }
+        .filtros { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 800px; }
+        .filtros label { display: block; margin-bottom: 4px; font-weight: bold; }
+        .filtro { display: flex; flex-direction: column; }
     </style>
 </head>
 <body>
-    <h1>Filtrar Casos por Data do Fato</h1>
+    <h1>Filtrar Casos por Filtros Combinados</h1>
 
     <form method="post">
+        <div class="filtros">
 
-        <label for="mes">Mês:</label>
-        <select name="mes" id="mes">
-            {% for num, nome in meses %}
-                <option value="{{ num }}">{{ nome }}</option>
+            {% for label, name, values in [('Mês', 'mes', meses), ('Ano', 'ano', anos), ('Sexo', 'sexo', sexos),
+                                           ('Região', 'regiao', regioes), ('Município', 'municipio', municipios),
+                                           ('Natureza', 'natureza', naturezas), ('Idade (SENASP)', 'idade', idades)] %}
+            <div class="filtro">
+                <label for="{{ name }}">{{ label }}:</label>
+                <select name="{{ name }}" id="{{ name }}" required>
+                    {% for v in values %}
+                        {% if v is iterable and v is not string %}
+                            <option value="{{ v[0] }}">{{ v[1] }}</option>
+                        {% else %}
+                            <option value="{{ v }}">{{ v if v is number else v.title() }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
             {% endfor %}
-        </select>
 
-        <label for="ano">Ano:</label>
-        <select name="ano" id="ano">
-            {% for a in anos %}
-                <option value="{{ a }}">{{ a }}</option>
-            {% endfor %}
-        </select>
+        </div>
 
+        <br>
         <button type="submit">Buscar</button>
     </form>
 
     {% if resultado %}
-        <div class="resultado">{{ resultado }}</div>
+        <div class="resultado" style="color: red;">{{ resultado }}</div>
     {% endif %}
 
     <br>

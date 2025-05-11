@@ -1,3 +1,4 @@
+# app.py
 from flask import Flask, render_template, request
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -6,6 +7,12 @@ import datetime
 
 app = Flask(__name__)
 df = pd.read_excel("Microdados de Violencia Domestica.xlsx")
+
+# Limpeza padrao para evitar problemas de comparacao
+for col in ['SEXO', 'REGIAO GEOGRÁFICA', 'MUNICÍPIO DO FATO', 'NATUREZA', 'IDADE SENASP']:
+    df[col] = df[col].astype(str).str.strip()
+
+df['DATA DO FATO'] = pd.to_datetime(df['DATA DO FATO'], errors='coerce')
 
 colunas_disponiveis = {
     "municipio": ("MUNICÍPIO DO FATO", "bar"),
@@ -30,28 +37,20 @@ def criar_grafico(coluna, nome_arquivo, tipo):
 
     if tipo == "bar":
         dados_contagem.plot(kind='bar', color='teal')
-        plt.xlabel(coluna.title(), fontsize=12)
+        plt.xlabel(coluna, fontsize=12)
         plt.ylabel("Quantidade de Casos", fontsize=12)
-
     elif tipo == "pie":
-        dados_contagem.plot(
-            kind='pie',
-            autopct='%1.1f%%',
-            startangle=140,
-            textprops={'fontsize': 10, 'color': 'black'}
-        )
+        dados_contagem.plot(kind='pie', autopct='%1.1f%%', startangle=140, textprops={'fontsize': 10})
         plt.xlabel("")
         plt.ylabel("")
-
     elif tipo == "line":
         dados_contagem.sort_index().plot(kind='line', marker='o', color='green')
-        plt.xlabel(coluna.title(), fontsize=12)
+        plt.xlabel(coluna, fontsize=12)
         plt.ylabel("Quantidade de Casos", fontsize=12)
-
     elif tipo == "barh":
         dados_contagem.plot(kind='barh', color='teal')
         plt.xlabel("Quantidade de Casos", fontsize=12)
-        plt.ylabel(coluna.title(), fontsize=12)
+        plt.ylabel(coluna, fontsize=12)
 
     plt.xticks(rotation=45, ha='right', fontsize=10)
     plt.tight_layout()
@@ -70,15 +69,16 @@ def dashboard():
 
 @app.route("/data", methods=["GET", "POST"])
 def filtrar_data():
+    meses = [(1, 'Janeiro'), (2, 'Fevereiro'), (3, 'Março'), (4, 'Abril'),
+             (5, 'Maio'), (6, 'Junho'), (7, 'Julho'), (8, 'Agosto'),
+             (9, 'Setembro'), (10, 'Outubro'), (11, 'Novembro'), (12, 'Dezembro')]
 
-    meses = [
-        (1, 'Janeiro'), (2, 'Fevereiro'), (3, 'Março'), (4, 'Abril'),
-        (5, 'Maio'), (6, 'Junho'), (7, 'Julho'), (8, 'Agosto'),
-        (9, 'Setembro'), (10, 'Outubro'), (11, 'Novembro'), (12, 'Dezembro')
-    ]
-
-    df['DATA DO FATO'] = pd.to_datetime(df['DATA DO FATO'], errors='coerce')
     anos_unicos = sorted(df['DATA DO FATO'].dropna().dt.year.unique())
+    sexos = sorted(df['SEXO'].dropna().unique())
+    regioes = sorted(df['REGIAO GEOGRÁFICA'].dropna().unique())
+    municipios = sorted(df['MUNICÍPIO DO FATO'].dropna().unique())
+    naturezas = sorted(df['NATUREZA'].dropna().unique())
+    idades = sorted(df['IDADE SENASP'].dropna().unique())
 
     resultado = None
     total_casos = 0
@@ -86,21 +86,43 @@ def filtrar_data():
     if request.method == "POST":
         mes = request.form.get("mes")
         ano = request.form.get("ano")
+        sexo = request.form.get("sexo")
+        regiao = request.form.get("regiao")
+        municipio = request.form.get("municipio")
+        natureza = request.form.get("natureza")
+        idade = request.form.get("idade")
 
-        if mes and ano:
+        if not all([mes, ano, sexo, regiao, municipio, natureza, idade]):
+            resultado = "⚠️ Preencha todos os campos para realizar a busca."
+        else:
             mes = int(mes)
             ano = int(ano)
 
             filtro = df[
                 (df['DATA DO FATO'].dt.month == mes) &
-                (df['DATA DO FATO'].dt.year == ano)
+                (df['DATA DO FATO'].dt.year == ano) &
+                (df['SEXO'] == sexo) &
+                (df['REGIAO GEOGRÁFICA'] == regiao) &
+                (df['MUNICÍPIO DO FATO'] == municipio) &
+                (df['NATUREZA'] == natureza) &
+                (df['IDADE SENASP'] == idade)
             ]
+
             total_casos = len(filtro)
+            resultado = f"{total_casos} caso(s) encontrado(s) com os filtros selecionados"
 
-            nome_mes = dict(meses)[mes]
-            resultado = f"{nome_mes} de {ano} — {total_casos} caso(s) registrado(s)"
-
-    return render_template("data.html", meses=meses, anos=anos_unicos, resultado=resultado, total_casos=total_casos)
+    return render_template(
+        "data.html",
+        meses=meses,
+        anos=anos_unicos,
+        sexos=sexos,
+        regioes=regioes,
+        municipios=municipios,
+        naturezas=naturezas,
+        idades=idades,
+        resultado=resultado,
+        total_casos=total_casos
+    )
 
 @app.route("/grafico/<categoria>")
 def exibir_grafico(categoria):
