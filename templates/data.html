@@ -1,3 +1,4 @@
+<!-- data.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -17,36 +18,95 @@
     <h1>Filtrar Casos por Filtros Combinados</h1>
 
     <form method="post">
-        <div class="filtros">
+        <label><input type="radio" name="tipo_filtro" value="padrao" checked> Filtro por Mês e Ano</label><br>
+        <label><input type="radio" name="tipo_filtro" value="intervalo"> Filtro por Intervalo de Datas</label><br><br>
 
-            {% for label, name, values in [('Mês', 'mes', meses), ('Ano', 'ano', anos), ('Sexo', 'sexo', sexos),
-                                           ('Região', 'regiao', regioes), ('Município', 'municipio', municipios),
-                                           ('Natureza', 'natureza', naturezas), ('Idade (SENASP)', 'idade', idades)] %}
-            <div class="filtro">
-                <label for="{{ name }}">{{ label }}:</label>
-                <select name="{{ name }}" id="{{ name }}" required>
-                    {% for v in values %}
-                        {% if v is iterable and v is not string %}
-                            <option value="{{ v[0] }}">{{ v[1] }}</option>
-                        {% else %}
-                            <option value="{{ v }}">{{ v if v is number else v.title() }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-            </div>
-            {% endfor %}
+        <div id="filtro-padrao">
+            <label>Mês:</label>
+            <select name="mes">
+                {% for numero, nome in meses %}
+                    <option value="{{ numero }}">{{ nome }}</option>
+                {% endfor %}
+            </select>
+            <label>Ano:</label>
+            <select name="ano">
+                {% for numero, nome in anos %}
+                    <option value="{{ numero }}">{{ nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
+        <div id="filtro-intervalo" style="display:none;">
+            <label>Data Início:</label>
+            <input type="date" name="data_inicio">
+            <label>Data Fim:</label>
+            <input type="date" name="data_fim">
         </div>
 
         <br>
-        <button type="submit">Buscar</button>
+        <label>Sexo:</label>
+        <select name="sexo">
+            {% for sexo in sexos %}
+                <option value="{{ sexo }}">{{ sexo }}</option>
+            {% endfor %}
+        </select>
+        <label>Região:</label>
+        <select name="regiao">
+            {% for regiao in regioes %}
+                <option value="{{ regiao }}">{{ regiao }}</option>
+            {% endfor %}
+        </select>
+        <label>Município:</label>
+        <select name="municipio">
+            {% for municipio in municipios %}
+                <option value="{{ municipio }}">{{ municipio }}</option>
+            {% endfor %}
+        </select>
+        <label>Natureza:</label>
+        <select name="natureza">
+            {% for natureza in naturezas %}
+                <option value="{{ natureza }}">{{ natureza }}</option>
+            {% endfor %}
+        </select>
+        <label>Idade:</label>
+        <select name="idade">
+            {% for idade in idades %}
+                <option value="{{ idade }}">{{ idade }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <button type="submit">Filtrar</button>
+        <br>
     </form>
 
     {% if resultado %}
-        <div class="resultado" style="color: red;">{{ resultado }}</div>
+        <h2>{{ resultado }}</h2>
     {% endif %}
 
-    <br>
-    <a href="/"><button>Voltar</button></a>
+</table>
+<br><br>
+<a href="/"><button>Voltar</button></a>
+</div>
+    <script>
+        const radiopadrao = document.querySelector('input[value="padrao"]');
+        const radioIntervalo = document.querySelector('input[value="intervalo"]');
+        const filtropadrao = document.getElementById('filtro-padrao');
+        const filtroIntervalo = document.getElementById('filtro-intervalo');
+
+        function atualizarVisibilidade() {
+            if (radiopadrao.checked) {
+                filtropadrao.style.display = 'block';
+                filtroIntervalo.style.display = 'none';
+            } else {
+                filtropadrao.style.display = 'none';
+                filtroIntervalo.style.display = 'block';
+            }
+        }
+
+        radiopadrao.addEventListener('change', atualizarVisibilidade);
+        radioIntervalo.addEventListener('change', atualizarVisibilidade);
+
+        atualizarVisibilidade();
+    </script>
 </body>
 </html>
