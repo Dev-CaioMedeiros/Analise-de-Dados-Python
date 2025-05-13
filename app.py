@@ -1,14 +1,16 @@
-# app.py
 from flask import Flask, render_template, request
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import datetime
+import folium
+import json
 
 app = Flask(__name__)
-df = pd.read_excel("Microdados de Violencia Domestica.xlsx")
 
-# Limpeza padrao para evitar problemas de comparacao
+df = pd.read_excel("Microdados de Violencia Domestica.xlsx")
+df["MUNICÍPIO DO FATO"] = df["MUNICÍPIO DO FATO"].astype(str).str.strip().str.upper()
+
 for col in ['SEXO', 'REGIAO GEOGRÁFICA', 'MUNICÍPIO DO FATO', 'NATUREZA', 'IDADE SENASP']:
     df[col] = df[col].astype(str).str.strip()
 
@@ -37,20 +39,12 @@ def criar_grafico(coluna, nome_arquivo, tipo):
 
     if tipo == "bar":
         dados_contagem.plot(kind='bar', color='teal')
-        plt.xlabel(coluna, fontsize=12)
-        plt.ylabel("Quantidade de Casos", fontsize=12)
     elif tipo == "pie":
         dados_contagem.plot(kind='pie', autopct='%1.1f%%', startangle=140, textprops={'fontsize': 10})
-        plt.xlabel("")
-        plt.ylabel("")
     elif tipo == "line":
         dados_contagem.sort_index().plot(kind='line', marker='o', color='green')
-        plt.xlabel(coluna, fontsize=12)
-        plt.ylabel("Quantidade de Casos", fontsize=12)
     elif tipo == "barh":
         dados_contagem.plot(kind='barh', color='teal')
-        plt.xlabel("Quantidade de Casos", fontsize=12)
-        plt.ylabel(coluna, fontsize=12)
 
     plt.xticks(rotation=45, ha='right', fontsize=10)
     plt.tight_layout()
@@ -67,63 +61,6 @@ def criar_grafico(coluna, nome_arquivo, tipo):
 def dashboard():
     return render_template("index.html", categorias=colunas_disponiveis)
 
-@app.route("/data", methods=["GET", "POST"])
-def filtrar_data():
-    meses = [(1, 'Janeiro'), (2, 'Fevereiro'), (3, 'Março'), (4, 'Abril'),
-             (5, 'Maio'), (6, 'Junho'), (7, 'Julho'), (8, 'Agosto'),
-             (9, 'Setembro'), (10, 'Outubro'), (11, 'Novembro'), (12, 'Dezembro')]
-
-    anos_unicos = sorted(df['DATA DO FATO'].dropna().dt.year.unique())
-    sexos = sorted(df['SEXO'].dropna().unique())
-    regioes = sorted(df['REGIAO GEOGRÁFICA'].dropna().unique())
-    municipios = sorted(df['MUNICÍPIO DO FATO'].dropna().unique())
-    naturezas = sorted(df['NATUREZA'].dropna().unique())
-    idades = sorted(df['IDADE SENASP'].dropna().unique())
-
-    resultado = None
-    total_casos = 0
-
-    if request.method == "POST":
-        mes = request.form.get("mes")
-        ano = request.form.get("ano")
-        sexo = request.form.get("sexo")
-        regiao = request.form.get("regiao")
-        municipio = request.form.get("municipio")
-        natureza = request.form.get("natureza")
-        idade = request.form.get("idade")
-
-        if not all([mes, ano, sexo, regiao, municipio, natureza, idade]):
-            resultado = "⚠️ Preencha todos os campos para realizar a busca."
-        else:
-            mes = int(mes)
-            ano = int(ano)
-
-            filtro = df[
-                (df['DATA DO FATO'].dt.month == mes) &
-                (df['DATA DO FATO'].dt.year == ano) &
-                (df['SEXO'] == sexo) &
-                (df['REGIAO GEOGRÁFICA'] == regiao) &
-                (df['MUNICÍPIO DO FATO'] == municipio) &
-                (df['NATUREZA'] == natureza) &
-                (df['IDADE SENASP'] == idade)
-            ]
-
-            total_casos = len(filtro)
-            resultado = f"{total_casos} caso(s) encontrado(s) com os filtros selecionados"
-
-    return render_template(
-        "data.html",
-        meses=meses,
-        anos=anos_unicos,
-        sexos=sexos,
-        regioes=regioes,
-        municipios=municipios,
-        naturezas=naturezas,
-        idades=idades,
-        resultado=resultado,
-        total_casos=total_casos
-    )
-
 @app.route("/grafico/<categoria>")
 def exibir_grafico(categoria):
     nome_coluna, tipo_grafico = colunas_disponiveis.get(categoria, ("MUNICÍPIO DO FATO", "bar"))
@@ -131,6 +68,40 @@ def exibir_grafico(categoria):
     dados = criar_grafico(nome_coluna, nome_arquivo, tipo_grafico)
     timestamp = datetime.datetime.now().timestamp()
     return render_template("grafico.html", dados=dados, categoria=categoria, nome_arquivo=nome_arquivo, timestamp=timestamp)
+
+@app.route("/mapa")
+def mapa():
+    with open("geojs-26-mun.json", "r", encoding="utf-8") as f:
+        geojson_data = json.load(f)
+
+    dados_municipio = df["MUNICÍPIO DO FATO"].value_counts().reset_index()
+    dados_municipio.columns = ["Municipio", "Casos"]
+    dados_municipio["Municipio"] = dados_municipio["Municipio"].str.upper()
+
+    mapa = folium.Map(location=[-8.0476, -34.8770], zoom_start=7)
+
+    folium.Choropleth(
+        geo_data=geojson_data,
+        name="choropleth",
+        data=dados_municipio,
+        columns=["Municipio", "Casos"],
+        key_on="feature.properties.name",
+        fill_color="YlOrRd",
+        fill_opacity=0.7,
+        line_opacity=0.2,
+        legend_name="Casos por Município"
+    ).add_to(mapa)
+
+    for feature in geojson_data["features"]:
+        nome = feature["properties"]["name"].upper()
+        casos = int(dados_municipio.set_index("Municipio").get("Casos", {}).get(nome, 0))
+        popup = folium.Popup(f"{nome.title()}: {casos} caso(s)", parse_html=True)
+        geo = folium.GeoJson(feature)
+        geo.add_child(popup)
+        geo.add_to(mapa)
+
+    mapa.save("static/mapa_pernambuco.html")
+    return render_template("mapa_pernambuco.html")
 
 if __name__ == "__main__":
     app.run(debug=True, threaded=True)
