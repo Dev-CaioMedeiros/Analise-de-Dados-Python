@@ -6,16 +6,30 @@ import datetime
 import folium
 import json
 
+# Cria o aplicativo Flask
 app = Flask(__name__)
 
+# Lê os dados do Excel
+# Esse arquivo tem os casos de violência doméstica
 df = pd.read_excel("Microdados Sobre Violencia Domestica.xlsx")
 df["MUNICÍPIO DO FATO"] = df["MUNICÍPIO DO FATO"].astype(str).str.strip().str.upper()
 
+# Limpa espaços e padroniza maiúsculas
 for col in ['SEXO', 'REGIAO GEOGRÁFICA', 'MUNICÍPIO DO FATO', 'NATUREZA', 'IDADE SENASP']:
     df[col] = df[col].astype(str).str.strip()
 
+# Converte datas para o formato certo
 df['DATA DO FATO'] = pd.to_datetime(df['DATA DO FATO'], errors='coerce')
 
+# Dicionário com nomes que precisam ser corrigidos (nomes diferentes entre o Excel e o mapa)
+substituicoes_municipios = {
+    "BELEM DO SAO FRANCISCO": "BELEM DE SAO FRANCISCO",
+    "SAO CAETANO": "SAO CAITANO",
+    "LAGOA DE ITAENGA": "LAGOA DO ITAENGA",
+    "ITAMARACA": "ILHA DE ITAMARACA"
+}
+
+# Define os tipos de gráficos que vão ser mostrados no dashboard
 colunas_disponiveis = {
     "municipio": ("MUNICÍPIO DO FATO", "bar"),
     "regiao": ("REGIAO GEOGRÁFICA", "pie"),
@@ -26,6 +40,10 @@ colunas_disponiveis = {
     "idade": ("IDADE SENASP", "bar"),
     "envolvidos": ("TOTAL DE ENVOLVIDOS", "line")
 }
+
+# Função que cria os gráficos com base nos dados
+# Gera imagens salvas na pasta static
+# Cada tipo usa um estilo de gráfico diferente
 
 def criar_grafico(coluna, nome_arquivo, tipo):
     dados_contagem = df[coluna].value_counts().nlargest(11 if coluna == "ANO" else 10)
@@ -41,6 +59,9 @@ def criar_grafico(coluna, nome_arquivo, tipo):
         dados_contagem.plot(kind='bar', color='teal')
     elif tipo == "pie":
         dados_contagem.plot(kind='pie', autopct='%1.1f%%', startangle=140, textprops={'fontsize': 10})
+        plt.ylabel('')
+        plt.xlabel('')
+        
     elif tipo == "line":
         dados_contagem.sort_index().plot(kind='line', marker='o', color='green')
     elif tipo == "barh":
@@ -57,10 +78,12 @@ def criar_grafico(coluna, nome_arquivo, tipo):
 
     return dados_contagem.reset_index().values.tolist()
 
+# Página principal com os botões
 @app.route("/")
 def dashboard():
     return render_template("index.html", categorias=colunas_disponiveis)
 
+# Mostra os gráficos de cada tipo escolhido pelo usuário
 @app.route("/grafico/<categoria>")
 def exibir_grafico(categoria):
     nome_coluna, tipo_grafico = colunas_disponiveis.get(categoria, ("MUNICÍPIO DO FATO", "bar"))
@@ -69,39 +92,202 @@ def exibir_grafico(categoria):
     timestamp = datetime.datetime.now().timestamp()
     return render_template("grafico.html", dados=dados, categoria=categoria, nome_arquivo=nome_arquivo, timestamp=timestamp)
 
+# Página que permite filtrar os dados com base em opções escolhidas
+@app.route("/data", methods=["GET", "POST"])
+def filtrar_data():
+    meses = [
+        (0, 'Todos'), (1, 'Janeiro'), (2, 'Fevereiro'), (3, 'Março'), (4, 'Abril'),
+        (5, 'Maio'), (6, 'Junho'), (7, 'Julho'), (8, 'Agosto'), (9, 'Setembro'),
+        (10, 'Outubro'), (11, 'Novembro'), (12, 'Dezembro')
+    ]
+    anos_disponiveis = sorted(df['DATA DO FATO'].dropna().dt.year.unique().tolist())
+    anos_unicos = [(0, 'Todos')] + [(ano, str(ano)) for ano in anos_disponiveis] 
+    sexos = ['Todos'] + sorted(df['SEXO'].dropna().unique().tolist())
+    regioes = ['Todas'] + sorted(df['REGIAO GEOGRÁFICA'].dropna().unique().tolist())
+    municipios = ['Todos'] + sorted(df['MUNICÍPIO DO FATO'].dropna().unique().tolist())
+    naturezas = ['Todas'] + sorted(df['NATUREZA'].dropna().unique().tolist())
+    idades = ['Todas'] + sorted(df['IDADE SENASP'].dropna().unique().tolist())
+
+    resultado = None
+    total_casos = 0
+
+    if request.method == "POST":
+        tipo_filtro = request.form.get("tipo_filtro")
+        filtros = []
+
+        # Filtro por mês/ano ou intervalo de datas
+        if tipo_filtro == "padrao":
+            mes_selecionado = request.form.get("mes")
+            ano_selecionado = request.form.get("ano")
+            if mes_selecionado != '0':
+                filtros.append(df['DATA DO FATO'].dt.month == int(mes_selecionado))
+            if ano_selecionado != '0':
+                filtros.append(df['DATA DO FATO'].dt.year == int(ano_selecionado))
+        elif tipo_filtro == "intervalo":
+            data_inicio = request.form.get("data_inicio")
+            data_fim = request.form.get("data_fim")
+            if data_inicio:
+                filtros.append(df['DATA DO FATO'] >= pd.to_datetime(data_inicio))
+            if data_fim:
+                filtros.append(df['DATA DO FATO'] <= pd.to_datetime(data_fim))
+
+        # Filtros de outras colunas
+        sexo_selecionado = request.form.get("sexo")
+        regiao_selecionada = request.form.get("regiao")
+        municipio_selecionado = request.form.get("municipio")
+        natureza_selecionada = request.form.get("natureza")
+        idade_selecionada = request.form.get("idade")
+
+        if sexo_selecionado != 'Todos':
+            filtros.append(df['SEXO'] == sexo_selecionado)
+        if regiao_selecionada != 'Todas':
+            filtros.append(df['REGIAO GEOGRÁFICA'] == regiao_selecionada)
+        if municipio_selecionado != 'Todos':
+            filtros.append(df['MUNICÍPIO DO FATO'] == municipio_selecionado)
+        if natureza_selecionada != 'Todas':
+            filtros.append(df['NATUREZA'] == natureza_selecionada)
+        if idade_selecionada != 'Todas':
+            filtros.append(df['IDADE SENASP'] == idade_selecionada)
+
+        if filtros:
+            filtro_final = filtros[0]
+            for filtro in filtros[1:]:
+                filtro_final = filtro_final & filtro
+            filtro = df[filtro_final]
+            total_casos = len(filtro)
+            resultado = f"{total_casos} caso(s) encontrado(s) com os filtros selecionados"
+        else:
+            total_casos = len(df)
+            resultado = f"Total de {total_casos} casos registrados."
+
+    return render_template(
+        "data.html",
+        meses=meses,
+        anos=anos_unicos,
+        sexos=sexos,
+        regioes=regioes,
+        municipios=municipios,
+        naturezas=naturezas,
+        idades=idades,
+        resultado=resultado,
+        total_casos=total_casos
+    )
+
+# Rota que gera o mapa com dados por município
 @app.route("/mapa")
 def mapa():
+    import unidecode
+
     with open("geojs-26-mun.json", "r", encoding="utf-8") as f:
         geojson_data = json.load(f)
 
-    dados_municipio = df["MUNICÍPIO DO FATO"].value_counts().reset_index()
-    dados_municipio.columns = ["Municipio", "Casos"]
-    dados_municipio["Municipio"] = dados_municipio["Municipio"].str.upper()
+    # Ajustes no nome dos municípios
+    df["MUNICÍPIO SEM ACENTO"] = df["MUNICÍPIO DO FATO"].apply(lambda x: unidecode.unidecode(x))
+    df["MUNICÍPIO CORRIGIDO"] = df["MUNICÍPIO SEM ACENTO"].replace(substituicoes_municipios)
+    df["REGIAO SEM ACENTO"] = df["REGIAO GEOGRÁFICA"].apply(lambda x: unidecode.unidecode(str(x).upper()))
 
+    # Conta os casos por município
+    dados_municipio = df.groupby("MUNICÍPIO CORRIGIDO").agg({
+        "TOTAL DE ENVOLVIDOS": "count",
+        "REGIAO SEM ACENTO": "first"
+    }).reset_index()
+
+    dados_municipio.columns = ["municipio", "casos", "regiao"]
+
+    # Corrige os nomes dos municípios no GeoJSON
+    for feature in geojson_data["features"]:
+        nome_original = feature["properties"]["name"]
+        nome_formatado = unidecode.unidecode(nome_original.upper())
+        feature["properties"]["municipio_fmt"] = nome_formatado
+
+    # Cria o mapa
     mapa = folium.Map(location=[-8.0476, -34.8770], zoom_start=7)
 
+    # Cria o mapa colorido com os dados
     folium.Choropleth(
         geo_data=geojson_data,
         name="choropleth",
         data=dados_municipio,
-        columns=["Municipio", "Casos"],
-        key_on="feature.properties.name",
+        columns=["municipio", "casos"],
+        key_on="feature.properties.municipio_fmt",
         fill_color="YlOrRd",
         fill_opacity=0.7,
         line_opacity=0.2,
-        legend_name="Casos por Município"
+        legend_name="Casos por Município",
     ).add_to(mapa)
 
-    for feature in geojson_data["features"]:
-        nome = feature["properties"]["name"].upper()
-        casos = int(dados_municipio.set_index("Municipio").get("Casos", {}).get(nome, 0))
-        popup = folium.Popup(f"{nome.title()}: {casos} caso(s)", parse_html=True)
-        geo = folium.GeoJson(feature)
-        geo.add_child(popup)
-        geo.add_to(mapa)
+    # Popups com nome, casos e região
+    casos_dict = dict(zip(dados_municipio["municipio"], dados_municipio["casos"]))
+    regioes_dict = dict(zip(dados_municipio["municipio"], dados_municipio["regiao"]))
 
+    for feature in geojson_data["features"]:
+        nome_mun = feature["properties"]["municipio_fmt"]
+        feature["properties"]["casos"] = casos_dict.get(nome_mun, 0)
+        feature["properties"]["regiao"] = regioes_dict.get(nome_mun, "Desconhecida")
+
+    folium.GeoJson(
+        geojson_data,
+        name="Municípios",
+        tooltip=folium.GeoJsonTooltip(
+            fields=["name", "casos", "regiao"],
+            aliases=["Município:", "Casos:", "Região:"],
+            localize=True,
+            sticky=False
+        )
+    ).add_to(mapa)
+
+    # Salva o mapa como HTML
     mapa.save("static/mapa_pernambuco.html")
     return render_template("mapa_pernambuco.html")
 
+#Cria a rota para comparar dois municípios ou regiões
+@app.route("/comparar", methods=["GET", "POST"])
+def comparar():
+    resultado = None
+    tipo = request.args.get("tipo", "municipio")
+    opcoes = sorted(df["MUNICÍPIO DO FATO"].unique().tolist())
+    total_1 = total_2 = 0
+    resumo_1 = resumo_2 = {}
+
+    if tipo == "regiao":
+        opcoes = sorted(df["REGIAO GEOGRÁFICA"].unique().tolist())
+
+    if request.method == "POST":
+        tipo = request.form.get("tipo")
+        local1 = request.form.get("local1")
+        local2 = request.form.get("local2")
+
+        if tipo == "municipio":
+            col = "MUNICÍPIO DO FATO"
+        else:
+            col = "REGIAO GEOGRÁFICA"
+
+        total_1 = df[df[col] == local1].shape[0]
+        total_2 = df[df[col] == local2].shape[0]
+
+        resumo_1 = df[df[col] == local1]["SEXO"].value_counts().to_dict()
+        resumo_2 = df[df[col] == local2]["SEXO"].value_counts().to_dict()
+
+        if total_1 > total_2:
+            comparacao = f"{local1} teve {total_1 - total_2} caso(s) a mais que {local2}."
+        elif total_2 > total_1:
+            comparacao = f"{local2} teve {total_2 - total_1} caso(s) a mais que {local1}."
+        else:
+            comparacao = f"{local1} e {local2} tiveram a mesma quantidade de casos."
+
+        resultado = {
+            "tipo": tipo,
+            "local1": local1,
+            "total1": total_1,
+            "resumo1": resumo_1,
+            "local2": local2,
+            "total2": total_2,
+            "resumo2": resumo_2,
+            "comparacao": comparacao
+        }
+
+    return render_template("comparar.html", tipo=tipo, opcoes=opcoes, resultado=resultado)
+
+# Roda a aplicação Flask
 if __name__ == "__main__":
     app.run(debug=True, threaded=True)

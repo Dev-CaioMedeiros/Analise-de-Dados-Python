@@ -1,0 +1,94 @@
+<!-- comparar.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Comparar Locais</title>
+    <style>
+        body {
+            font-family: Arial; 
+            text-align: center; 
+            padding: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        select, button {
+            padding: 8px; 
+            margin: 5px;
+        }
+        .resultado {
+            margin-top: 20px; 
+            font-weight: bold; 
+            font-size: 18px;
+        }
+        .comparacao {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .comparacao div {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+    <script>
+        function atualizarOpcoes() {
+            const tipo = document.querySelector('input[name="tipo"]:checked').value;
+            window.location.href = `/comparar?tipo=${tipo}`;
+        }
+    </script>
+</head>
+<body>
+    <h1>Comparar Municípios ou Regiões</h1>
+    <form method="post">
+        <label><input type="radio" name="tipo" value="municipio" onchange="atualizarOpcoes()" {% if tipo == 'municipio' %}checked{% endif %}> Município</label>
+        <label><input type="radio" name="tipo" value="regiao" onchange="atualizarOpcoes()" {% if tipo == 'regiao' %}checked{% endif %}> Região</label>
+        <br><br>
+
+        <select name="local1" required>
+            <option value="">-- Escolha o primeiro --</option>
+            {% for opcao in opcoes %}
+                <option value="{{ opcao }}">{{ opcao }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="local2" required>
+            <option value="">-- Escolha o segundo --</option>
+            {% for opcao in opcoes %}
+                <option value="{{ opcao }}">{{ opcao }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <button type="submit">Comparar</button>
+    </form>
+
+    {% if resultado %}
+        <div class="comparacao">
+            <div>
+                <h3>{{ resultado.local1 }}: {{ resultado.total1 }} caso(s)</h3>
+                <ul>
+                    {% for sexo, qtd in resultado.resumo1.items() %}
+                        <li>{{ sexo }}: {{ qtd }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <h3>{{ resultado.local2 }}: {{ resultado.total2 }} caso(s)</h3>
+                <ul>
+                    {% for sexo, qtd in resultado.resumo2.items() %}
+                        <li>{{ sexo }}: {{ qtd }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <h2 style="color: teal;">{{ resultado.comparacao }}</h2>
+    {% endif %}
+
+    <br>
+    <a href="/"><button>Voltar ao Início</button></a>
+</body>
+</html>
