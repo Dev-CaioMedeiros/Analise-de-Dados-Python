@@ -1,22 +1,17 @@
 from flask import Flask, render_template, request
+import io, base64, os, datetime, folium, json
 import pandas as pd
 import matplotlib.pyplot as plt
-import os
-import datetime
-import folium
-import json
 
 # Cria o aplicativo Flask
 app = Flask(__name__)
+
 
 # Lê os dados do Excel
 # Esse arquivo tem os casos de violência doméstica
 df = pd.read_excel("Microdados Sobre Violencia Domestica.xlsx")
 df["MUNICÍPIO DO FATO"] = df["MUNICÍPIO DO FATO"].astype(str).str.strip().str.upper()
 
-# Limpa espaços e padroniza maiúsculas
-for col in ['SEXO', 'REGIAO GEOGRÁFICA', 'MUNICÍPIO DO FATO', 'NATUREZA', 'IDADE SENASP']:
-    df[col] = df[col].astype(str).str.strip()
 
 # Converte datas para o formato certo
 df['DATA DO FATO'] = pd.to_datetime(df['DATA DO FATO'], errors='coerce')
@@ -31,14 +26,14 @@ substituicoes_municipios = {
 
 # Define os tipos de gráficos que vão ser mostrados no dashboard
 colunas_disponiveis = {
-    "municipio": ("MUNICÍPIO DO FATO", "bar"),
-    "regiao": ("REGIAO GEOGRÁFICA", "pie"),
-    "natureza": ("NATUREZA", "barh"),
-    "data": ("DATA DO FATO", "line"),
-    "ano": ("ANO", "bar"),
-    "sexo": ("SEXO", "bar"),
-    "idade": ("IDADE SENASP", "bar"),
-    "envolvidos": ("TOTAL DE ENVOLVIDOS", "line")
+    "Município": ("MUNICÍPIO DO FATO", "bar"),
+    "Região": ("REGIAO GEOGRÁFICA", "pie"),
+    "Natureza": ("NATUREZA", "barh"),
+    "Data": ("DATA DO FATO", "line"),
+    "Ano": ("ANO", "bar"),
+    "Sexo": ("SEXO", "bar"),
+    "Idade": ("IDADE SENASP", "bar"),
+    "Envolvidos": ("TOTAL DE ENVOLVIDOS", "line")
 }
 
 # Função que cria os gráficos com base nos dados
@@ -244,50 +239,131 @@ def mapa():
 @app.route("/comparar", methods=["GET", "POST"])
 def comparar():
     resultado = None
+    erro = None
+    # Obtém o tipo do formulário ou mantém o padrão
+    tipo = request.form.get("tipo", request.args.get("tipo", "municipio"))
+
+    try:
+        # Determina as opções e a coluna com base no tipo
+        if tipo == "regiao":
+            opcoes = sorted(df["REGIAO GEOGRÁFICA"].dropna().unique().tolist())
+            coluna = "REGIAO GEOGRÁFICA"
+        else:
+            opcoes = sorted(df["MUNICÍPIO DO FATO"].dropna().unique().tolist())
+            coluna = "MUNICÍPIO DO FATO"
+
+        if request.method == "POST" and "local1" in request.form and "local2" in request.form:
+            local1 = request.form.get("local1")
+            local2 = request.form.get("local2")
+
+            # Valida se os locais foram selecionados
+            if not local1 or not local2:
+                erro = "Selecione ambos os locais."
+            elif local1 not in opcoes or local2 not in opcoes:
+                erro = "Um ou ambos os locais selecionados são inválidos."
+            else:
+                # Calcula os totais
+                total_1 = df[df[coluna] == local1].shape[0]
+                total_2 = df[df[coluna] == local2].shape[0]
+
+                # Obtém a distribuição por sexo
+                resumo_1 = df[df[coluna] == local1]["SEXO"].value_counts().to_dict()
+                resumo_2 = df[df[coluna] == local2]["SEXO"].value_counts().to_dict()
+
+                # Gera a comparação
+                if total_1 > total_2:
+                    comparacao = f"{local1} teve {total_1 - total_2} caso(s) a mais que {local2}."
+                elif total_2 > total_1:
+                    comparacao = f"{local2} teve {total_2 - total_1} caso(s) a mais que {local1}."
+                else:
+                    comparacao = f"{local1} e {local2} tiveram a mesma quantidade de casos."
+
+                resultado = {
+                    "tipo": tipo,
+                    "local1": local1,
+                    "total1": total_1,
+                    "resumo1": resumo_1,
+                    "local2": local2,
+                    "total2": total_2,
+                    "resumo2": resumo_2,
+                    "comparacao": comparacao
+                }
+
+        return render_template(
+            "comparar.html",
+            tipo=tipo,
+            opcoes=opcoes,
+            resultado=resultado if resultado else {},
+            erro=erro
+        )
+
+    except KeyError as e:
+        erro = f"Erro: Coluna {e} não encontrada no DataFrame."
+    except Exception as e:
+        erro = f"Erro inesperado: {str(e)}"
+
+    return render_template(
+        "comparar.html",
+        tipo=tipo,
+        opcoes=opcoes if 'opcoes' in locals() else [],
+        resultado=resultado if resultado else {},
+        erro=erro
+    )
+
+
+
+@app.route("/opcoes")
+def obter_opcoes():
     tipo = request.args.get("tipo", "municipio")
-    opcoes = sorted(df["MUNICÍPIO DO FATO"].unique().tolist())
-    total_1 = total_2 = 0
-    resumo_1 = resumo_2 = {}
-
-    if tipo == "regiao":
-        opcoes = sorted(df["REGIAO GEOGRÁFICA"].unique().tolist())
-
-    if request.method == "POST":
-        tipo = request.form.get("tipo")
-        local1 = request.form.get("local1")
-        local2 = request.form.get("local2")
-
-        if tipo == "municipio":
-            col = "MUNICÍPIO DO FATO"
+    try:
+        if tipo == "regiao":
+            opcoes = sorted(df["REGIAO GEOGRÁFICA"].dropna().unique().tolist())
         else:
-            col = "REGIAO GEOGRÁFICA"
+            opcoes = sorted(df["MUNICÍPIO DO FATO"].dropna().unique().tolist())
+        return {"opcoes": opcoes}
+    except Exception as e:
+        return {"opcoes": [], "erro": str(e)}
 
-        total_1 = df[df[col] == local1].shape[0]
-        total_2 = df[df[col] == local2].shape[0]
+@app.route("/comparador")
+def comparador():
+    return render_template("comparador.html")
 
-        resumo_1 = df[df[col] == local1]["SEXO"].value_counts().to_dict()
-        resumo_2 = df[df[col] == local2]["SEXO"].value_counts().to_dict()
+@app.route("/graficos")
+def graficos():
+    return render_template("graficos.html")
 
-        if total_1 > total_2:
-            comparacao = f"{local1} teve {total_1 - total_2} caso(s) a mais que {local2}."
-        elif total_2 > total_1:
-            comparacao = f"{local2} teve {total_2 - total_1} caso(s) a mais que {local1}."
-        else:
-            comparacao = f"{local1} e {local2} tiveram a mesma quantidade de casos."
+@app.route("/gerar_graficos", methods=["POST"])
+def gerar_graficos_route():
+    data = request.get_json()
+    variaveis = data.get('variaveis', [])
 
-        resultado = {
-            "tipo": tipo,
-            "local1": local1,
-            "total1": total_1,
-            "resumo1": resumo_1,
-            "local2": local2,
-            "total2": total_2,
-            "resumo2": resumo_2,
-            "comparacao": comparacao
-        }
+    if not variaveis:
+        return "<p>Nenhuma variável selecionada.</p>"
 
-    return render_template("comparar.html", tipo=tipo, opcoes=opcoes, resultado=resultado)
+    html = "<h2>Gráficos Gerados</h2>"
+    timestamp = datetime.datetime.now().timestamp()
 
-# Roda a aplicação Flask
+    for var in variaveis:
+        if var not in colunas_disponiveis:
+            html += f"<p>Variável inválida: {var}</p>"
+            continue
+
+        nome_coluna, tipo_grafico = colunas_disponiveis[var]
+        nome_arquivo = f"grafico_{var}"
+
+        if var == "ano" and "ANO" not in df.columns:
+            df["ANO"] = df["DATA DO FATO"].dt.year
+
+        criar_grafico(nome_coluna, nome_arquivo, tipo_grafico)
+
+        html += f"""
+            <div style="margin-bottom: 30px;">
+                <h3>{nome_coluna}</h3>
+                <img src="/static/{nome_arquivo}.png?{timestamp}" style="max-width: 100%; height: auto;">
+            </div>
+        """
+
+    return html
+
 if __name__ == "__main__":
     app.run(debug=True, threaded=True)

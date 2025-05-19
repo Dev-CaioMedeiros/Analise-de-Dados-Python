@@ -1,0 +1,63 @@
+<!-- Graficos.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Filtrar por Dados</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script defer src="{{ url_for('static', filename='graficos.js') }}"></script>
+</head>
+<body>
+
+<h1>Dashboard de Violência Doméstica</h1>
+
+<button onclick="toggleDropdown()">GRÁFICOS</button>
+
+<div id="checkboxDropdown" style="display:none; margin:10px 0;">
+  <form id="graficoForm">
+    <label><input type="checkbox" name="variaveis" value="municipio"> Município do Fato</label><br>
+    <label><input type="checkbox" name="variaveis" value="regiao"> Região Geográfica</label><br>
+    <label><input type="checkbox" name="variaveis" value="natureza"> Natureza</label><br>
+    <label><input type="checkbox" name="variaveis" value="data"> Data dos Ocorridos</label><br>
+    <label><input type="checkbox" name="variaveis" value="ano"> Ano</label><br>
+    <label><input type="checkbox" name="variaveis" value="sexo"> Sexo</label><br>
+    <label><input type="checkbox" name="variaveis" value="idade"> Idade SENASP</label><br>
+    <label><input type="checkbox" name="variaveis" value="envolvidos"> Total de Envolvidos</label><br>
+    <button type="submit">Ver Gráficos</button> 
+    
+    
+  </form>
+</div>
+<a href="/"><button>Voltar para o Inicio</button></a>
+<div id="resultado">
+  <!-- Os gráficos e resumos serão injetados aqui -->
+</div>
+
+<script>
+function toggleDropdown() {
+  const box = document.getElementById('checkboxDropdown');
+  box.style.display = (box.style.display === 'none') ? 'block' : 'none';
+}
+
+document.getElementById('graficoForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const variaveis = formData.getAll('variaveis');
+
+  if (variaveis.length === 0 || variaveis.length > 8) {
+    alert('Selecione entre 1 e 8 variáveis.');
+    return;
+  }
+
+  const response = await fetch('/gerar_graficos', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({variaveis: variaveis})
+  });
+
+  const html = await response.text();
+  document.getElementById('resultado').innerHTML = html;
+});
+</script>
+</body>
+</html>

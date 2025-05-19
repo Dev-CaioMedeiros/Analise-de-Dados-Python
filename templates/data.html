@@ -1,18 +1,11 @@
-<!-- data.html -->
+<!-- Data.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Filtrar por Dados</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        select, button { padding: 6px 10px; margin: 5px; }
-        .resultado { margin-top: 20px; font-weight: bold; font-size: 18px; }
-        form { display: flex; flex-direction: column; align-items: center; }
-        .filtros { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 800px; }
-        .filtros label { display: block; margin-bottom: 4px; font-weight: bold; }
-        .filtro { display: flex; flex-direction: column; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script defer src="{{ url_for('static', filename='data.js') }}"></script>
 </head>
 <body>
     <h1>Filtrar Casos por Filtros Combinados</h1>
@@ -83,30 +76,7 @@
         <h2>{{ resultado }}</h2>
     {% endif %}
 
-</table>
-<br><br>
-<a href="/"><button>Voltar</button></a>
-</div>
-    <script>
-        const radiopadrao = document.querySelector('input[value="padrao"]');
-        const radioIntervalo = document.querySelector('input[value="intervalo"]');
-        const filtropadrao = document.getElementById('filtro-padrao');
-        const filtroIntervalo = document.getElementById('filtro-intervalo');
-
-        function atualizarVisibilidade() {
-            if (radiopadrao.checked) {
-                filtropadrao.style.display = 'block';
-                filtroIntervalo.style.display = 'none';
-            } else {
-                filtropadrao.style.display = 'none';
-                filtroIntervalo.style.display = 'block';
-            }
-        }
-
-        radiopadrao.addEventListener('change', atualizarVisibilidade);
-        radioIntervalo.addEventListener('change', atualizarVisibilidade);
-
-        atualizarVisibilidade();
-    </script>
+    <br><br>
+    <a href="/"><button>Voltar</button></a>
 </body>
 </html>

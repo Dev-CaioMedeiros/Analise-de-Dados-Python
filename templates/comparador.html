@@ -1,0 +1,23 @@
+<!-- Comparador.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Escolher Comparação</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+</head>
+<body>
+    <h1>Escolha uma Dado para Comparar</h1>
+    <div class="container-comparador">
+        <button onclick="window.location.href='/comparador/idade'">Idade</button>
+        <button onclick="window.location.href='/comparador/ano'">Ano</button>
+        <button onclick="window.location.href='/comparador/sexo'">Sexo</button>
+        <button onclick="window.location.href='/comparador/natureza'">Natureza</button>
+        <button onclick="window.location.href='/comparador/regiao'">Região</button>
+        <button onclick="window.location.href='/comparador/municipio'">Município</button>
+        <button onclick="window.location.href='/comparador/envolvidos'">Envolvidos</button>
+    </div>
+    <br>
+    <a href="/"><button>Voltar</button></a>
+</body>
+</html>

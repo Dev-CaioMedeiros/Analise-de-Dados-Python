@@ -1,0 +1,235 @@
+/* Comparador.html */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    background-color:	#4683b4af; 
+}
+
+.container-comparador {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px;
+}
+
+.container-comparador button,
+a button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+/* Comparar.html */
+form {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.comparacao-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.resultado01, .resultado02 {
+    background-color: #ffffff30;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    color: rgb(0, 0, 0);
+    box-shadow: 0px 0px 10px #00000020;
+    font-family: sans-serif;
+}
+
+.resultado01 h2, .resultado02 h2 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.resultado01 p, .resultado02 p {
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.resultado01 ul, .resultado02 ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
+}
+
+.resultado01 li, .resultado02 li {
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+.resultado_Final {
+    margin-top: 30px;
+    text-align: center;
+    font-weight: bold;
+    font-family: sans-serif;
+    background-color: #ffffff30;
+    padding: 15px;
+    border-radius: 10px;
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0px 0px 8px #00000020;
+    color: black;
+}
+.resultado_Final h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-family: monospace;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+/* Grafico.html */
+
+.grafico-container, h3,h2{
+    font-family: monospace;
+    font-size: 25px;
+}
+table {
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 8px 12px;
+    border: 1px solid #000000;
+    font-family: monospace;
+    font-size: 18px;
+    font-weight: bold;
+}
+#grafico-container {
+    display: none;
+    text-align: center;
+}
+
+/* Index.html */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    background-color:#4683b4af; 
+}
+
+button {
+  background-color: #4682B4; /* Um verde agradável */
+  font-family: Monospace;
+  font-weight:bold;
+  color: #e6e6e6; /* Texto branco para contraste */
+  padding: 10px 20px; /* Espaçamento interno para o botão */
+  border: none; /* Remove a borda padrão */
+  border-radius: 5px; /* Deixa as bordas levemente arredondadas */
+  cursor: pointer; /* Muda o cursor para indicar que é clicável */
+  font-size: 16px; /* Tamanho da fonte do texto do botão */
+  margin: 5px; /* Espaçamento entre os botões */
+  transition: background-color 0.3s ease; /* Adiciona uma transição suave ao passar o mouse */
+}
+
+button:hover {
+  background-color: #1E90FF; /* Um tom de verde um pouco mais escuro ao passar o mouse */
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Mapa_pernambuco.html */
+iframe {
+    width: 100%;
+    height: 90vh;
+    border: none;
+}
+
+/* Data.html */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+select, button {
+    padding: 6px 10px;
+    margin: 5px;
+}
+
+.resultado {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 800px;
+}
+
+.filtros label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+.filtro {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Graficos.html */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color:#4683b4af; 
+}
+h1 {
+    color: #2c3e50;
+}
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+
+
+
