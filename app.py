@@ -26,14 +26,14 @@ substituicoes_municipios = {
 
 # Define os tipos de gráficos que vão ser mostrados no dashboard
 colunas_disponiveis = {
-    "Município": ("MUNICÍPIO DO FATO", "bar"),
-    "Região": ("REGIAO GEOGRÁFICA", "pie"),
-    "Natureza": ("NATUREZA", "barh"),
-    "Data": ("DATA DO FATO", "line"),
-    "Ano": ("ANO", "bar"),
-    "Sexo": ("SEXO", "bar"),
-    "Idade": ("IDADE SENASP", "bar"),
-    "Envolvidos": ("TOTAL DE ENVOLVIDOS", "line")
+    "municipio": ("MUNICÍPIO DO FATO", "bar"),
+    "regiao": ("REGIAO GEOGRÁFICA", "pie"),
+    "natureza": ("NATUREZA", "barh"),
+    "data": ("DATA DO FATO", "line"),
+    "ano": ("ANO", "bar"),
+    "sexo": ("SEXO", "bar"),
+    "idade": ("IDADE SENASP", "bar"),
+    "envolvidos": ("TOTAL DE ENVOLVIDOS", "line")
 }
 
 # Função que cria os gráficos com base nos dados
