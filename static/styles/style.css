@@ -1,17 +1,27 @@
 /* Comparador.html */
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 20px;
-    background-color:	#4683b4af; 
-}
 
+
+body, h1 {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+h1 {
+    padding: 20px;
+    background-color: #4683b4af;
+    max-width: fit-content;
+    border-radius: 10px;
+    position: relative;
+    margin: 0 auto; /* Centraliza horizontalmente */
+    margin-bottom:2rem;
+    
+}  
 .container-comparador {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
     margin: 20px;
+    
 }
 
 .container-comparador button,
@@ -24,9 +34,11 @@ a button {
 
 /* Comparar.html */
 form {
-    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 900px; /* Aumentado para acomodar melhor a .filtro-dados */
     margin: 0 auto;
-    text-align: left;
 }
 
 .form-group {
@@ -36,19 +48,16 @@ form {
 label {
     display: block;
     margin-bottom: 5px;
+    color: #2c3e50;
 }
 
-select {
-    width: 100%;
-    padding: 8px;
+select, button {
+    padding: 8px 12px; /* Ajustado para consistência com outros elementos */
+    margin: 5px;
+    border-radius: 5px;
     font-size: 14px;
 }
 
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin-top: 10px;
-}
 
 .comparacao-container {
     display: flex;
@@ -71,22 +80,26 @@ button {
 .resultado01 h2, .resultado02 h2 {
     text-align: center;
     margin-bottom: 15px;
+    color: #e6e6e6;
 }
 
 .resultado01 p, .resultado02 p {
     text-align: left;
     margin-bottom: 10px;
+    color: #e6e6e6;
 }
 
 .resultado01 ul, .resultado02 ul {
     list-style: none;
     padding-left: 0;
     margin-top: 10px;
+    color: #e6e6e6;
 }
 
 .resultado01 li, .resultado02 li {
     text-align: left;
     margin-bottom: 5px;
+    color: #e6e6e6;
 }
 
 .resultado_Final {
@@ -101,7 +114,7 @@ button {
     margin-left: auto;
     margin-right: auto;
     box-shadow: 0px 0px 8px #00000020;
-    color: black;
+    color: #e6e6e6;
 }
 .resultado_Final h2 {
     text-align: center;
@@ -109,6 +122,7 @@ button {
     font-family: monospace;
     font-size: 25px;
     font-weight: bold;
+    color: #e6e6e6;
 }
 
 /* Grafico.html */
@@ -159,12 +173,7 @@ button:hover {
   background-color: #1E90FF; /* Um tom de verde um pouco mais escuro ao passar o mouse */
 }
 
-.container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-}
+
 
 /* Mapa_pernambuco.html */
 iframe {
@@ -191,12 +200,6 @@ select, button {
     font-size: 18px;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 .filtros {
     display: flex;
     flex-wrap: wrap;
@@ -215,16 +218,45 @@ form {
     display: flex;
     flex-direction: column;
 }
+.resultado-data {
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-family: sans-serif;
+  }
 
+.filtro-dados {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px; /* Aumentado para melhor separação visual */
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+.filtro-dados label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: left;
+    color: #2c3e50; /* Consistente com outras páginas */
+}
+
+.filtro-dados select {
+    width: 160px; /* Ajustado para melhor proporção */
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc; /* Adicionado para melhor visibilidade */
+}
+
+.resultado-data {
+    color: #e6e6e6;
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
 /* Graficos.html */
-body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color:#4683b4af; 
-}
-h1 {
-    color: #2c3e50;
-}
 .container {
     max-width: 1000px;
     margin: auto;

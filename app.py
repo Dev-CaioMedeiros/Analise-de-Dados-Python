@@ -53,9 +53,9 @@ def criar_grafico(coluna, nome_arquivo, tipo):
     if tipo == "bar":
         dados_contagem.plot(kind='bar', color='teal')
     elif tipo == "pie":
-        dados_contagem.plot(kind='pie', autopct='%1.1f%%', startangle=140, textprops={'fontsize': 10})
+        dados_contagem.plot(kind='pie', autopct='%1.1f%%', startangle=140, textprops={'fontsize': 10, 'color': '#e6e6e6'},)
         plt.ylabel('')
-        plt.xlabel('')
+        plt.xlabel('')  
         
     elif tipo == "line":
         dados_contagem.sort_index().plot(kind='line', marker='o', color='green')
@@ -68,7 +68,7 @@ def criar_grafico(coluna, nome_arquivo, tipo):
     if not os.path.exists("static"):
         os.makedirs("static")
 
-    plt.savefig(f"static/{nome_arquivo}.png")
+    plt.savefig(f"static/{nome_arquivo}.png", transparent=True)
     plt.close()
 
     return dados_contagem.reset_index().values.tolist()

@@ -4,28 +4,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Interativo</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='index_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index_style.css') }}">
 </head>
 <body>
-    <div class ="titulo" >
+    <div class="titulo">
         <h1>Dashboard de Violência Doméstica</h1>
-            <h3>Escolha um gráfico para visualizar</h3>
     </div>
 
-    <div class="container">
-        <a href="/grafico/municipio"><button>Município do Fato</button></a>
-        <a href="/grafico/regiao"><button>Região Geográfica</button></a>
-        <a href="/grafico/natureza"><button>Natureza</button></a>
-        <a href="/grafico/data"><button>Data dos Ocorridos</button></a>
-        <a href="/grafico/ano"><button>Ano</button></a>
-        <a href="/grafico/sexo"><button>Sexo</button></a>
-        <a href="/grafico/idade"><button>Idade SENASP</button></a>
-        <a href="/grafico/envolvidos"><button>Total de Envolvidos</button></a>
-        <a href="/data"><button>Filtrar por Dados Combinados</button></a>
-        <a href="/mapa"><button>Mapa de casos PE</button></a>
-        <a href="/comparar"><button>Comparar Municípios ou Regiões</button></a>
-        <a href="/graficos"><button>Graficos</button></a>
+    <div class="main-content">
+        <h3 class="subtitulo">Escolha um gráfico para visualizar</h3>
+
+        <div class="container">
+            <a href="/grafico/municipio"><button>Município do Fato</button></a>
+            <a href="/grafico/regiao"><button>Região Geográfica</button></a>
+            <a href="/grafico/natureza"><button>Natureza</button></a>
+            <a href="/grafico/data"><button>Data dos Ocorridos</button></a>
+            <a href="/grafico/ano"><button>Ano</button></a>
+            <a href="/grafico/sexo"><button>Sexo</button></a>
+            <a href="/grafico/idade"><button>Idade SENASP</button></a>
+            <a href="/grafico/envolvidos"><button>Total de Envolvidos</button></a>
+            <a href="/data"><button>Filtrar por Dados Combinados</button></a>
+            <a href="/mapa"><button>Mapa de casos PE</button></a>
+            <a href="/comparar"><button>Comparar Municípios ou Regiões</button></a>
+            <a href="/graficos"><button>Gráficos</button></a>
+        </div>
     </div>
+</body>
+
+
 </body>
 </html>
 

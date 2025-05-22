@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Filtrar por Dados</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script defer src="{{ url_for('static', filename='data.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/data.css') }}">
+    <script defer src="{{ url_for('static', filename='script/data.js') }}"></script>
 </head>
 <body>
     <h1>Filtrar Casos por Filtros Combinados</h1>
@@ -37,6 +37,7 @@
         </div>
 
         <br>
+        <div class="filtros-dados">
         <label>Sexo:</label>
         <select name="sexo">
             {% for sexo in sexos %}
@@ -67,15 +68,16 @@
                 <option value="{{ idade }}">{{ idade }}</option>
             {% endfor %}
         </select>
+        </div>
         <br><br>
         <button type="submit">Filtrar</button>
         <br>
     </form>
-
+    <div class="resultado-data">
     {% if resultado %}
         <h2>{{ resultado }}</h2>
     {% endif %}
-
+    </div>
     <br><br>
     <a href="/"><button>Voltar</button></a>
 </body>

@@ -1,0 +1,75 @@
+/* Data.html */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    background-color: #4683b4af;
+}
+h1 {
+    padding: 20px;
+    background-color: #4683b4af;
+    max-width: fit-content;
+    border-radius: 10px;
+    position: relative;
+    margin: 0 auto; /* Centraliza horizontalmente */
+    margin-bottom:2rem;
+    
+}  
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 900px; /* Aumentado para acomodar melhor a .filtro-dados */
+    margin: 0 auto;
+}
+
+select, button {
+    padding: 8px 12px; /* Ajustado para consistência com outros elementos */
+    margin: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+button {
+    background-color: #4682B4;
+    color: #e6e6e6;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #1E90FF;
+}
+
+.filtro-dados {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px; /* Aumentado para melhor separação visual */
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+.filtro-dados label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: left;
+    color: #2c3e50; /* Consistente com outras páginas */
+}
+
+.filtro-dados select {
+    width: 160px; /* Ajustado para melhor proporção */
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc; /* Adicionado para melhor visibilidade */
+}
+
+.resultado-data {
+    color: #e6e6e6;
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
