@@ -38,47 +38,67 @@
 
         <br>
         <div class="filtros-dados">
+    <div>
         <label>Sexo:</label>
         <select name="sexo">
             {% for sexo in sexos %}
                 <option value="{{ sexo }}">{{ sexo }}</option>
             {% endfor %}
         </select>
+    </div>
+
+    <div>
         <label>Região:</label>
         <select name="regiao">
             {% for regiao in regioes %}
                 <option value="{{ regiao }}">{{ regiao }}</option>
             {% endfor %}
         </select>
+    </div>
+
+    <div>
         <label>Município:</label>
         <select name="municipio">
             {% for municipio in municipios %}
                 <option value="{{ municipio }}">{{ municipio }}</option>
             {% endfor %}
         </select>
+    </div>
+
+    <div>
         <label>Natureza:</label>
         <select name="natureza">
             {% for natureza in naturezas %}
                 <option value="{{ natureza }}">{{ natureza }}</option>
             {% endfor %}
         </select>
+    </div>
+
+    <div>
         <label>Idade:</label>
         <select name="idade">
             {% for idade in idades %}
                 <option value="{{ idade }}">{{ idade }}</option>
             {% endfor %}
         </select>
-        </div>
+    </div>
+</div>
+
         <br><br>
         <button type="submit">Filtrar</button>
         <br>
     </form>
+
     <div class="resultado-data">
-    {% if resultado %}
-        <h2>{{ resultado }}</h2>
-    {% endif %}
+        {% if resultado %}
+            <h2>{{ resultado }}</h2>
+        {% endif %}
     </div>
+
     <br><br>
-    <a href="/"><button>Voltar</button></a>
+   <div class="back-button">
+    <a href="/" class="btn-voltar">Voltar</a>
+</div>
+
 </body>
 </html>

@@ -1,37 +1,50 @@
-<!-- Index.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Interativo</title>
+    <title>Dashboard Violência Doméstica</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/index_style.css') }}">
 </head>
 <body>
-    <div class="titulo">
-        <h1>Dashboard de Violência Doméstica</h1>
+
+<div class="container">
+  <h1>Dashboard de Violência Doméstica</h1>
+  <p>Escolha um para visualizar</p>
+
+  <div class="sections-wrapper">
+    <div class="graficos">
+      <h2>Gráficos</h2>
+      <div class="grid-graficos">
+        <a href="/grafico/municipio"><button>Município do Fato</button></a>
+        <a href="/grafico/regiao"><button>Região Geográfica</button></a>
+        <a href="/grafico/natureza"><button>Natureza</button></a>
+        <a href="/grafico/data"><button>Data dos Ocorridos</button></a>
+        <a href="/grafico/ano"><button>Ano</button></a>
+        <a href="/grafico/sexo"><button>Sexo</button></a>
+        <a href="/grafico/idade"><button>Idade SENASP</button></a>
+        <a href="/grafico/envolvidos"><button>Total de Envolvidos</button></a>
+      </div>
     </div>
 
-    <div class="main-content">
-        <h3 class="subtitulo">Escolha um gráfico para visualizar</h3>
+    <div class="comparadores">
+      <h2>Comparadores</h2>
+      <div class="grid-comparadores">
+        <a href="/data"><button>FILTRO<br>Dados Combinados</button></a>
+        <a href="/comparar"><button>COMPARADOR<br>Municípios/Regiões</button></a>
+        <a href="/comparador_novo"><button>COMPARADOR <br> Todos os Dados</button></a>
+      </div>
 
-        <div class="container">
-            <a href="/grafico/municipio"><button>Município do Fato</button></a>
-            <a href="/grafico/regiao"><button>Região Geográfica</button></a>
-            <a href="/grafico/natureza"><button>Natureza</button></a>
-            <a href="/grafico/data"><button>Data dos Ocorridos</button></a>
-            <a href="/grafico/ano"><button>Ano</button></a>
-            <a href="/grafico/sexo"><button>Sexo</button></a>
-            <a href="/grafico/idade"><button>Idade SENASP</button></a>
-            <a href="/grafico/envolvidos"><button>Total de Envolvidos</button></a>
-            <a href="/data"><button>Filtrar por Dados Combinados</button></a>
-            <a href="/mapa"><button>Mapa de casos PE</button></a>
-            <a href="/comparar"><button>Comparar Municípios ou Regiões</button></a>
-            <a href="/graficos"><button>Gráficos</button></a>
-        </div>
+      <div class="grafico-central">
+        <a href="/graficos"><button>Gráficos</button></a>
+      </div>
     </div>
-</body>
+  </div>
 
+  <div class="mapa-button">
+    <a href="/mapa"><button>Mapa de casos PE</button></a>
+  </div>
+</div>
 
 </body>
 </html>
-

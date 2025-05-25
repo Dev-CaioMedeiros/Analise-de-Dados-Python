@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import io, base64, os, datetime, folium, json
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -310,8 +310,6 @@ def comparar():
         erro=erro
     )
 
-
-
 @app.route("/opcoes")
 def obter_opcoes():
     tipo = request.args.get("tipo", "municipio")
@@ -324,9 +322,150 @@ def obter_opcoes():
     except Exception as e:
         return {"opcoes": [], "erro": str(e)}
 
-@app.route("/comparador")
-def comparador():
-    return render_template("comparador.html")
+@app.route("/comparador_novo")
+def comparador_novo():
+    
+    atributos_base = [col for col in df.columns if col not in ["TOTAL DE ENVOLVIDOS", "MUNICÍPIO SEM ACENTO", "MUNICÍPIO CORRIGIDO", "REGIAO SEM ACENTO", "NATUREZA"]]
+    atributos_derivados = ["ANO", "MÊS", "NATUREZA DO FATO"]
+    atributos = sorted(list(set(atributos_base + atributos_derivados)))
+    print("Colunas do DataFrame:", df.columns.tolist())  
+    print("Atributos disponíveis:", atributos)  
+    return render_template("comparador_novo.html", atributos=atributos)
+
+@app.route("/valores_atributo")
+def valores_atributo():
+    atributo = request.args.get("atributo")
+    if not atributo:
+        return jsonify({"valores": [], "erro": "Atributo inválido"})
+
+    try:
+        df_temp = df.copy()  # Cria uma cópia para evitar modificar o DataFrame original
+        df_temp = df_temp.dropna(subset=['DATA DO FATO'])  # Remove nulos para ANO e MÊS
+
+        if atributo == "ANO":
+            df_temp['ANO'] = df_temp['DATA DO FATO'].dt.year
+            valores = [int(x) for x in df_temp['ANO'].dropna().unique() if pd.notnull(x)]
+        elif atributo == "MÊS":
+            df_temp['MÊS'] = df_temp['DATA DO FATO'].dt.month.map({
+                1: 'Janeiro', 2: 'Fevereiro', 3: 'Março', 4: 'Abril', 5: 'Maio', 6: 'Junho',
+                7: 'Julho', 8: 'Agosto', 9: 'Setembro', 10: 'Outubro', 11: 'Novembro', 12: 'Dezembro'
+            })
+            valores = df_temp['MÊS'].dropna().unique().tolist()
+        elif atributo == "DATA DO FATO":
+            # Retorna valores para validação, mas frontend usará <input type="date">
+            valores = df_temp[atributo].dropna().dt.strftime('%d/%m/%Y').unique().tolist()
+        elif atributo == "NATUREZA DO FATO":
+            # Remove o sufixo "POR VIOLÊNCIA DOMÉSTICA/FAMILIAR" ou similares
+            df_temp['NATUREZA DO FATO'] = df_temp['NATUREZA'].str.replace(
+                r'\s*POR\s+VIOL[ÊE]NCIA\s+DOM[EÉ]STICA[/E\s]*FAMILIAR\s*', '', regex=True, case=False
+            ).str.strip()
+            valores = df_temp['NATUREZA DO FATO'].dropna().unique().tolist()
+        elif atributo in df_temp.columns:
+            valores = df_temp[atributo].dropna().unique().tolist()
+        else:
+            return jsonify({"valores": [], "erro": f"Atributo {atributo} não encontrado"})
+
+        valores = sorted([str(v) for v in valores])
+        print(f"Valores para {atributo}: {valores[:10]}")  # Log para depuração
+        return jsonify({"valores": valores})
+    except Exception as e:
+        print(f"Erro em valores_atributo para {atributo}: {str(e)}")
+        return jsonify({"valores": [], "erro": f"Erro ao processar {atributo}: {str(e)}"})
+
+@app.route("/comparar_atributos_novo", methods=["POST"])
+def comparar_atributos_novo():
+    try:
+        selecoes = request.get_json()
+        if not selecoes:
+            return jsonify({"erro": "Nenhuma seleção fornecida"})
+
+        df_temp = df.copy()  # Cria uma cópia para evitar modificar o DataFrame original
+        df_temp = df_temp.dropna(subset=['DATA DO FATO'])  # Remove nulos para ANO e MÊS
+        df_temp['ANO'] = df_temp['DATA DO FATO'].dt.year
+        df_temp['MÊS'] = df_temp['DATA DO FATO'].dt.month.map({
+            1: 'Janeiro', 2: 'Fevereiro', 3: 'Março', 4: 'Abril', 5: 'Maio', 6: 'Junho',
+            7: 'Julho', 8: 'Agosto', 9: 'Setembro', 10: 'Outubro', 11: 'Novembro', 12: 'Dezembro'
+        })
+        # Cria NATUREZA DO FATO
+        df_temp['NATUREZA DO FATO'] = df_temp['NATUREZA'].str.replace(
+            r'\s*POR\s+VIOL[ÊE]NCIA\s+DOM[EÉ]STICA[/E\s]*FAMILIAR\s*', '', regex=True, case=False
+        ).str.strip()
+
+        resultado = []
+        for selecao in selecoes:
+            atributo = selecao.get("atributo")
+            valor1 = selecao.get("valor1")
+            valor2 = selecao.get("valor2")
+
+            if not atributo or not valor1 or not valor2:
+                return jsonify({"erro": "Atributo ou valores não fornecidos"})
+
+            if atributo not in df_temp.columns and atributo not in ["ANO", "MÊS", "NATUREZA DO FATO"]:
+                return jsonify({"erro": f"Atributo {atributo} não encontrado"})
+
+            # Converter valores para o tipo correto
+            if atributo == "DATA DO FATO":
+                # Aceita tanto YYYY-MM-DD (input type="date") quanto DD/MM/YYYY (legado)
+                try:
+                    valor1 = pd.to_datetime(valor1, format='%Y-%m-%d', errors='coerce')
+                    if valor1 is pd.NaT:
+                        valor1 = pd.to_datetime(valor1, format='%d/%m/%Y', errors='coerce')
+                except:
+                    valor1 = pd.to_datetime(valor1, format='%d/%m/%Y', errors='coerce')
+                try:
+                    valor2 = pd.to_datetime(valor2, format='%Y-%m-%d', errors='coerce')
+                    if valor2 is pd.NaT:
+                        valor2 = pd.to_datetime(valor2, format='%d/%m/%Y', errors='coerce')
+                except:
+                    valor2 = pd.to_datetime(valor2, format='%d/%m/%Y', errors='coerce')
+                
+                if valor1 is pd.NaT or valor2 is pd.NaT:
+                    return jsonify({"erro": f"Data inválida para {atributo}: {valor1} ou {valor2}"})
+
+                filtro1 = df_temp[atributo].dt.date == valor1.date()
+                filtro2 = df_temp[atributo].dt.date == valor2.date()
+                valor1_display = valor1.strftime('%d/%m/%Y')  # Formato para exibição
+                valor2_display = valor2.strftime('%d/%m/%Y')
+            elif atributo == "ANO":
+                valor1 = int(valor1) if valor1 else valor1
+                valor2 = int(valor2) if valor2 else valor2
+                filtro1 = df_temp[atributo] == valor1
+                filtro2 = df_temp[atributo] == valor2
+                valor1_display = str(valor1)
+                valor2_display = str(valor2)
+            elif atributo in ["MÊS", "NATUREZA DO FATO"]:
+                filtro1 = df_temp[atributo] == valor1
+                filtro2 = df_temp[atributo] == valor2
+                valor1_display = valor1
+                valor2_display = valor2
+            else:
+                filtro1 = df_temp[atributo] == valor1
+                filtro2 = df_temp[atributo] == valor2
+                valor1_display = valor1
+                valor2_display = valor2
+
+            # Contar casos para cada valor
+            total1 = df_temp[filtro1].shape[0]
+            total2 = df_temp[filtro2].shape[0]
+
+            # Resumo por sexo
+            resumo1 = df_temp[filtro1]["SEXO"].value_counts().to_dict()
+            resumo2 = df_temp[filtro2]["SEXO"].value_counts().to_dict()
+
+            resultado.append({
+                "atributo": atributo,
+                "valor1": valor1_display,
+                "total1": total1,
+                "resumo1": resumo1,
+                "valor2": valor2_display,
+                "total2": total2,
+                "resumo2": resumo2
+            })
+
+        return jsonify({"resultado": resultado})
+    except Exception as e:
+        print(f"Erro em comparar_atributos_novo: {str(e)}")
+        return jsonify({"erro": f"Erro na comparação: {str(e)}"})
 
 @app.route("/graficos")
 def graficos():

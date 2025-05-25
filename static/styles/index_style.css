@@ -6,34 +6,29 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to right, #6fb1fc, #4364f7);
-    color: white;
+    background: linear-gradient(to right, #4683b4af, #4364f7);
+    color:  #e6e6e6;
     height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-
-.titulo {
-    text-align: center;
-    margin-top: 85px;  
-}
-
-.titulo h1 {
+.container h1 {
     font-size: 2.8rem;
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.subtitulo {
-    font-weight: 400;
-    font-size: 1.2rem;
+.container p {
+    
+    font-weight:bolder;
+    font-size: 1.1rem;
     color: #e6e6e6;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
     text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
-
 
 .main-content {
     display: flex;
@@ -45,19 +40,82 @@ body {
 }
 
 .container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    width: 100%;
-    max-width: 1000px;
+  text-align: center;
+  padding: 40px;
+  color: #e6e6e6;
+  margin-top: 85px;  
 }
 
+.section  {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.grid-graficos {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 15px;
+}
+
+.graficos h2 {
+font-size: 1.5rem;
+margin-bottom: 15px;
+margin-top: 30px;
+color: #e6e6e6; 
+}
+
+.mapa-button a {
+    display: flex;
+    justify-content: center; 
+    width: 50%; 
+    margin: 0 auto;
+    margin-top: 70px;
+    text-decoration: none;
+}
+
+.sections-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 180px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.grid-comparadores {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 15px;
+}
+
+.comparadores h2 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  margin-top: 30px;
+  color: #e6e6e6; 
+}
+
+.grafico-central a {
+    display: flex;
+    justify-content: center; 
+    width: 50%; 
+    margin: 0 auto;
+    margin-top: 20px;
+    text-decoration: none;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  justify-items: center;
+}
 
 .container button {
     width: 100%;
     padding: 15px;
     background: #1E90FF;
-    color: #fff;
+    color: #e6e6e6;
     border: none;
     border-radius: 14px;
     font-weight: bold;
@@ -71,14 +129,4 @@ body {
 .container button:hover {
     background: #0b75d1;
     transform: scale(1.05);
-}
-
-@media (max-width: 600px) {
-    .titulo h1 {
-        font-size: 2rem;
-    }
-
-    .titulo h3 {
-        font-size: 1rem;
-    }
 }

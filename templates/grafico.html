@@ -4,19 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Gráfico - {{ categoria }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/graficos.css') }}">
     <script defer src="{{ url_for('static', filename='script/grafico.js') }}"></script>
     
 </head>
 <body>
     <h2>Gráfico</h2>
-
-    <div id="loader"></div>
-
-    <div id="grafico-container">
+    <div class ="grafico-container">
         <img id="grafico-img" src="{{ url_for('static', filename=nome_arquivo + '.png') }}?t={{ timestamp }}" alt="Gráfico">
 
         <h3>Resumo dos Dados</h3>
+        <br>
         <table>
             <tr>
                 <th>{{ categoria }}</th>
@@ -29,7 +27,7 @@
                 </tr>
             {% endfor %}
         </table>
-
+        <br>
         <a href="/"><button>Voltar</button></a>
     </div>
 

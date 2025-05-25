@@ -1,0 +1,175 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #4683b4af, #4364f7);
+    color:  #e6e6e6;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;  
+}
+
+.container {
+    max-width: 900px; 
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+h1 {
+    font-size: 2.8rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 900px; 
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label  {
+    display: block;
+    margin-bottom: 5px;
+    color: #e6e6e6;
+    
+}
+
+select, button {
+    padding: 8px 12px; /* Ajustado para consistência com outros elementos */
+    margin: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-decoration: none;  
+}
+
+
+.comparacao-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.resultado01, .resultado02 {
+    background-color: #ffffff30;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    color: rgb(0, 0, 0);
+    box-shadow: 0px 0px 10px #00000020;
+    font-family: sans-serif;
+}
+
+.resultado01 h2, .resultado02 h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #e6e6e6;
+}
+
+.resultado01 p, .resultado02 p {
+    text-align: left;
+    margin-bottom: 10px;
+    color: #e6e6e6;
+}
+
+.resultado01 ul, .resultado02 ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
+    color: #e6e6e6;
+}
+
+.resultado01 li, .resultado02 li {
+    text-align: left;
+    margin-bottom: 5px;
+    color: #e6e6e6;
+}
+
+.resultado_Final {
+    margin-top: 30px;
+    text-align: center;
+    font-weight: bold;
+    font-family: sans-serif;
+    background-color: #ffffff30;
+    padding: 15px;
+    border-radius: 10px;
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0px 0px 8px #00000020;
+    color: #e6e6e6;
+}
+.resultado_Final h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-family: monospace;
+    font-size: 25px;
+    font-weight: bold;
+    color: #e6e6e6;
+}
+
+button {
+    width: 50%;
+    padding: 15px;
+    margin: auto;
+    margin-bottom: 20px;
+    background: #1E90FF;
+    color: #e6e6e6;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    display: flex;
+    justify-content: center;
+    text-decoration: none;  
+}
+
+button:hover {
+    background: #0b75d1;
+    transform: scale(1.05);
+    text-decoration: none;  
+}
+
+.limpar button {
+    width: 70%;
+    padding: 15px;
+    margin: 0px;
+    margin-bottom: 20px;
+    background: #1E90FF;
+    color: #e6e6e6;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.back-button button{
+    width: 100%;  
+    display: flex;
+    justify-content: center;
+    text-decoration: none;  
+}
+

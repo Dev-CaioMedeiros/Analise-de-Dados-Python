@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<body lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Comparador</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/comparar.css') }}">
 </head>
 <body>
+<div class="container">
     <h1>Comparador</h1>
 
     {% if erro %}
@@ -20,7 +21,7 @@
         <div class="form-group">
             <label for="local1">Escolha o primeiro {{ tipo }}:</label>
             <select name="local1" id="local1" required>
-                <option value="">-- Escolha o primeiro --</option>
+                <option value="">Primeiro Valor...</option>
                 {% for opcao in opcoes %}
                     <option value="{{ opcao }}">{{ opcao }}</option>
                 {% endfor %}
@@ -29,7 +30,7 @@
         <div class="form-group">
             <label for="local2">Escolha o segundo {{ tipo }}:</label>
             <select name="local2" id="local2" required>
-                <option value="">-- Escolha o segundo --</option>
+                <option value="">Segundo Valor...</option>
                 {% for opcao in opcoes %}
                     <option value="{{ opcao }}">{{ opcao }}</option>
                 {% endfor %}
@@ -69,11 +70,22 @@
             <h2>Comparação</h2>
             <p>{{ resultado.comparacao }}</p>
         </div>
+        <br>
+        <div class = "limpar">
+            <form action="/comparar" method="get">
+                <button type="submit">Limpar Dados</button>
+            </form>
+        </div>
+        
+
     {% endif %}
 
     <br>
-    <a href="/"><button>Voltar</button></a>
-
+    <div class="back-button">
+        <button onclick="window.location.href='/'">Voltar</button>
+    </div>
+</div>
+</body>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         const tipoRadios = document.querySelectorAll('input[name="tipo"]');

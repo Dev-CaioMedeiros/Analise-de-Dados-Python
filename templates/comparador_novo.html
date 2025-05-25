@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="{{ url_for('static', filename='styles/comparador.css') }}">
+    <title>Comparador Dinâmico</title>
+</head>
+<body>
+    <h1>Comparador Dinâmico</h1>
+    
+    <!-- Seção para seleção de atributos -->
+    <div id="atributos-section">
+        <h2>Selecione os atributos para comparar:</h2>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <select id="atributos-disponiveis">
+                <option value="">Selecione um atributo</option>
+                {% for atributo in atributos %}
+                    <option value="{{ atributo }}">{{ atributo }}</option>
+                {% endfor %}
+            </select>
+            <button onclick="adicionarAtributo()">Adicionar Atributo</button>
+        </div>
+        <div id="selecao-atributos"></div>
+        <button onclick="comparar()" style="margin-top: 20px;">Comparar</button>
+        <button onclick="window.location.href='/'">Voltar ao Início</button>
+    </div>
+    
+    
+    <!-- Seção para resultado -->
+    <div id="resultado" style="display: none;">
+        <h2>Resultado da Comparação</h2>
+        <div id="erro" class="erro"></div>
+        <div class="tabela-container">
+            <table id="tabela-resultado"></table>
+        </div>
+        <canvas id="grafico"></canvas>
+
+    </div>
+
+    <!-- Biblioteca Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let chart = null;
+        let selecoes = [];
+
+        // Função para atualizar a borda com base no número de atributos
+        function updateBorder() {
+            const selecaoAtributos = document.getElementById('selecao-atributos');
+            selecaoAtributos.classList.toggle('has-attributes', selecoes.length > 0);
+        }
+
+        // Função para carregar valores de um atributo
+        async function carregarValores(atributo, select1, select2) {
+            try {
+                const response = await fetch(`/valores_atributo?atributo=${encodeURIComponent(atributo)}`);
+                const data = await response.json();
+                if (data.erro) {
+                    alert(data.erro);
+                    return;
+                }
+                select1.innerHTML = '<option value="">Selecione o primeiro valor</option>';
+                select2.innerHTML = '<option value="">Selecione o segundo valor</option>';
+                data.valores.forEach(valor => {
+                    const option1 = document.createElement('option');
+                    option1.value = valor;
+                    option1.textContent = valor;
+                    select1.appendChild(option1);
+                    const option2 = document.createElement('option');
+                    option2.value = valor;
+                    option2.textContent = valor;
+                    select2.appendChild(option2);
+                });
+            } catch (e) {
+                alert('Erro ao carregar valores: ' + e.message);
+            }
+        }
+
+        // Função para adicionar um atributo
+        async function adicionarAtributo() {
+            const atributosSelect = document.getElementById('atributos-disponiveis');
+            const atributo = atributosSelect.value;
+            if (!atributo) {
+                alert('Selecione um atributo!');
+                return;
+            }
+
+            // Criar container para o atributo
+            const container = document.createElement('div');
+            container.className = 'atributo-container';
+            container.innerHTML = `<strong>${atributo}</strong>`;
+
+            // Inputs para os valores
+            let input1, input2;
+            if (atributo === 'DATA DO FATO') {
+                input1 = document.createElement('input');
+                input1.type = 'date';
+                input1.placeholder = 'Selecione a primeira data';
+                input2 = document.createElement('input');
+                input2.type = 'date';
+                input2.placeholder = 'Selecione a segunda data';
+            } else {
+                input1 = document.createElement('select');
+                input2 = document.createElement('select');
+                await carregarValores(atributo, input1, input2);
+            }
+
+            container.appendChild(input1);
+            container.appendChild(input2);
+
+            // Botão de remoção
+            const removerBtn = document.createElement('button');
+            removerBtn.className = 'remover-btn';
+            removerBtn.textContent = 'Remover';
+            removerBtn.onclick = () => removerAtributo(atributo, container);
+            container.appendChild(removerBtn);
+
+            document.getElementById('selecao-atributos').appendChild(container);
+            
+            // Remover atributo do dropdown
+            atributosSelect.querySelector(`option[value="${atributo}"]`).remove();
+            selecoes.push({ atributo, input1, input2, container });
+
+            // Atualizar borda
+            updateBorder();
+        }
+
+        // Função para remover um atributo
+        function removerAtributo(atributo, container) {
+            // Remover o container da página
+            container.remove();
+
+            // Remover da lista de seleções
+            selecoes = selecoes.filter(s => s.atributo !== atributo);
+
+            // Restaurar o atributo ao dropdown
+            const atributosSelect = document.getElementById('atributos-disponiveis');
+            const option = document.createElement('option');
+            option.value = atributo;
+            option.textContent = atributo;
+            atributosSelect.appendChild(option);
+
+            // Ordenar as opções do dropdown
+            const options = Array.from(atributosSelect.options).slice(1);
+            options.sort((a, b) => a.textContent.localeCompare(b.textContent));
+            atributosSelect.innerHTML = '<option value="">Selecione um atributo</option>';
+            options.forEach(opt => atributosSelect.appendChild(opt));
+
+            // Atualizar borda
+            updateBorder();
+        }
+
+        // Função para comparar
+        async function comparar() {
+            const erroDiv = document.getElementById('erro');
+            erroDiv.textContent = '';
+            
+            if (selecoes.length === 0) {
+                erroDiv.textContent = 'Adicione pelo menos um atributo!';
+                return;
+            }
+
+            const dadosComparacao = selecoes.map(s => ({
+                atributo: s.atributo,
+                valor1: s.input1.value,
+                valor2: s.input2.value
+            }));
+
+            // Validar entradas de data
+            for (const selecao of dadosComparacao) {
+                if (selecao.atributo === 'DATA DO FATO') {
+                    if (!selecao.valor1 || !selecao.valor2) {
+                        erroDiv.textContent = 'Selecione ambas as datas para DATA DO FATO!';
+                        return;
+                    }
+                    // Verificar se as datas são válidas
+                    const date1 = new Date(selecao.valor1);
+                    const date2 = new Date(selecao.valor2);
+                    if (isNaN(date1.getTime()) || isNaN(date2.getTime())) {
+                        erroDiv.textContent = 'Datas inválidas selecionadas!';
+                        return;
+                    }
+                } else if (!selecao.valor1 || !selecao.valor2) {
+                    erroDiv.textContent = `Selecione ambos os valores para ${selecao.atributo}!`;
+                    return;
+                }
+            }
+
+            try {
+                const response = await fetch('/comparar_atributos_novo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dadosComparacao)
+                });
+                const data = await response.json();
+                
+                if (data.erro) {
+                    erroDiv.textContent = data.erro;
+                    return;
+                }
+
+                // Gerar tabela
+                const tabela = document.getElementById('tabela-resultado');
+                tabela.innerHTML = '';
+                const colunas = ['Atributo', 'Primeiro Valor', 'Casos (Primeiro)', 'Sexo (Primeiro)', 'Segundo Valor', 'Casos (Segundo)', 'Sexo (Segundo)'];
+                let thead = '<tr>' + colunas.map(col => `<th>${col}</th>`).join('') + '</tr>';
+                let tbody = data.resultado.map(row => {
+                    const resumo1 = Object.entries(row.resumo1).map(([sexo, count]) => `${sexo}: ${count}`).join('\n');
+                    const resumo2 = Object.entries(row.resumo2).map(([sexo, count]) => `${sexo}: ${count}`).join('\n');
+                    return `<tr>
+                        <td>${row.atributo}</td>
+                        <td>${row.valor1}</td>
+                        <td>${row.total1}</td>
+                        <td>${resumo1}</td>
+                        <td>${row.valor2}</td>
+                        <td>${row.total2}</td>
+                        <td>${resumo2}</td>
+                    </tr>`;
+                }).join('');
+                tabela.innerHTML = thead + tbody;
+
+                // Gerar gráfico
+                if (chart) chart.destroy();
+                const ctx = document.getElementById('grafico').getContext('2d');
+                const labels = data.resultado.map(row => `${row.atributo}: ${row.valor1} vs ${row.valor2}`);
+                const dataset1 = {
+                    label: 'Casos (Primeiro Valor)',
+                    data: data.resultado.map(row => row.total1),
+                    backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    borderWidth: 1
+                };
+                const dataset2 = {
+                    label: 'Casos (Segundo Valor)',
+                    data: data.resultado.map(row => row.total2),
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                };
+           chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [dataset1, dataset2]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    color: '#ffffff' // Cor dos números no eixo Y
+                }
+            },
+            x: {
+                ticks: {
+                    color: '#ffffff' // Cor dos textos no eixo X
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: true,
+                labels: {
+                    color: '#ffffff' // Cor da legenda
+                }
+            },
+            tooltip: {
+                titleColor: '#ffffff', // Cor do título no tooltip
+                bodyColor: '#ffffff',  // Cor do conteúdo no tooltip
+                backgroundColor: '#333333' // Cor de fundo do tooltip
+            }
+        }
+    }
+});
+
+
+                document.getElementById('resultado').style.display = 'block';
+            } catch (e) {
+                erroDiv.textContent = 'Erro ao comparar: ' + e.message;
+            }
+        }
+
+        // Remover borda inicial se houver (segurança)
+        document.addEventListener('DOMContentLoaded', () => {
+            updateBorder();
+        });
+    </script>
+</body>
+</html>

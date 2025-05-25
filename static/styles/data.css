@@ -1,75 +1,115 @@
-/* Data.html */
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 20px;
-    background-color: #4683b4af;
-}
-h1 {
-    padding: 20px;
-    background-color: #4683b4af;
-    max-width: fit-content;
-    border-radius: 10px;
-    position: relative;
-    margin: 0 auto; /* Centraliza horizontalmente */
-    margin-bottom:2rem;
-    
-}  
-form {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #4683b4af, #4364f7);
+    color: #e6e6e6;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 900px; /* Aumentado para acomodar melhor a .filtro-dados */
-    margin: 0 auto;
+    justify-content: center; 
 }
 
-select, button {
-    padding: 8px 12px; /* Ajustado para consistência com outros elementos */
-    margin: 5px;
-    border-radius: 5px;
-    font-size: 14px;
+h1 {
+    
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-button {
-    background-color: #4682B4;
+form {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 15px;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+label {
+    margin: 10px 0 5px 0;
+    font-weight: bold;
     color: #e6e6e6;
+}
+
+select, input[type="date"] {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-radius: 5px;
     border: none;
+    font-size: 14px;
+    width: 200px;
+}
+
+button, .btn-voltar {
+    padding: 10px 20px;
+    margin-top: 10px;
+    background: #1E90FF;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    text-decoration: none; /* Remove sublinhado */
+    display: inline-block;
 }
 
-button:hover {
-    background-color: #1E90FF;
+button:hover, .btn-voltar:hover {
+    background: #0b75d1;
+    transform: scale(1.05);
 }
 
-.filtro-dados {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px; /* Aumentado para melhor separação visual */
+.resultado-data {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    padding: 20px 30px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
     max-width: 800px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+
+.back-button {
+    margin-top: 20px;
+}
+
+.filtros-dados {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 40px;
+    max-width: 600px;
     margin: 0 auto;
     padding: 15px;
 }
 
-.filtro-dados label {
-    display: block;
-    margin-bottom: 5px;
+.filtros-dados label {
     font-weight: bold;
-    text-align: left;
-    color: #2c3e50; /* Consistente com outras páginas */
+    color: #e6e6e6;
 }
 
-.filtro-dados select {
-    width: 160px; /* Ajustado para melhor proporção */
+.filtros-dados select {
+    width: 100%;
     padding: 8px 12px;
     border-radius: 5px;
-    border: 1px solid #ccc; /* Adicionado para melhor visibilidade */
+    border: 1px solid #ccc;
 }
 
-.resultado-data {
-    color: #e6e6e6;
-    margin-top: 20px;
-    font-size: 18px;
-    font-weight: bold;
+.filtros-dados + button {
+    grid-column: 1 / -1; /* Faz o botão ocupar as duas colunas */
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
 }
+
