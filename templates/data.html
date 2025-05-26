@@ -89,11 +89,11 @@
         <br>
     </form>
 
+  {% if resultado %}
     <div class="resultado-data">
-        {% if resultado %}
-            <h2>{{ resultado }}</h2>
-        {% endif %}
+        <h2>{{ resultado }}</h2>
     </div>
+{% endif %}
 
     <br><br>
    <div class="back-button">
