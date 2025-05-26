@@ -59,10 +59,7 @@ Ideal para pesquisadores, gestores públicos ou qualquer pessoa interessada em e
 
 ### 5. **Execute a aplicação**
 
-- python app.py
-ou 
-- flask run
-
+- python app.py ou flask run
 - Acesse via navegador: http://localhost:5000
 
 ## 🧩 Pré-requisitos
