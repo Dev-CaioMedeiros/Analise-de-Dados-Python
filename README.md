@@ -65,27 +65,27 @@ Ideal para pesquisadores, gestores públicos ou qualquer pessoa interessada em e
 
 - Acesse via navegador: http://localhost:5000
 
-# 🧩 Pré-requisitos
+## 🧩 Pré-requisitos
 
 - Python 3.8+
 - pip
 
-# 🧠 Observações Importantes
+## 🧠 Observações Importantes
 
 - A aplicação cria automaticamente a pasta static/ com os gráficos e o mapa.
 - Certifique-se de que os nomes dos municípios no GeoJSON correspondam aos do Excel.
 - Para ambiente de produção, remova debug=True e use um servidor como o Gunicorn.
 
-# ❓ Solução de Problemas
+## ❓ Solução de Problemas
 
 - 🔍 Erro de dependência: Verifique com pip install -r requirements.txt.
 - 📂 Arquivos ausentes: Confirme se os dados estão no diretório correto.
 - 🔄 Porta em uso: Altere para app.run(port=5001) ou outra porta disponível.
 
-# 📄 Licença
+## 📄 Licença
 Este projeto é de uso educacional e analítico, distribuído de forma livre para estudos, pesquisas e aprimoramentos.
 
-# Desenvolvido com 🖥️ por Caio Medeiros.
+## Desenvolvido com 🖥️ por Caio Medeiros.
 
 
 
