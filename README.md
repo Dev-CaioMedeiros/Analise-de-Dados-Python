@@ -44,23 +44,23 @@ Ideal para pesquisadores, gestores públicos ou qualquer pessoa interessada em e
 
 ## ⚙️ Como Executar
 
-1. **Clone o repositório ou baixe os arquivos**
+### 1. **Clone o repositório ou baixe os arquivos**
 
-2. **Crie e ative um ambiente virtual** (recomendado)
+### 2. **Crie e ative um ambiente virtual** (recomendado)
 
-3. **Instale as dependências** 
+### 3. **Instale as dependências** 
 
 - pip install flask pandas openpyxl matplotlib folium unidecode
 
-4. **Coloque os arquivos necessários no diretório raiz:**
+### 4. **Coloque os arquivos necessários no diretório raiz:**
 
 - Microdados Sobre Violencia Domestica.xlsx
 - geojs-26-mun.json
 
-5. **Execute a aplicação**
+### 5. **Execute a aplicação**
 
 - python app.py
-- ou 
+    ou 
 - flask run
 
 - Acesse via navegador: http://localhost:5000
