@@ -1,4 +1,3 @@
-<!-- Graficos.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -9,55 +8,59 @@
 </head>
 <body>
 
-<h1>Dashboard de Violência Doméstica</h1>
+    <h1 class="titulo"> Exibidor de Graficos </h1>
 
-<button onclick="toggleDropdown()">GRÁFICOS</button>
+    <button class="toggle-button" onclick="toggleDropdown()">Selecionar Variáveis</button>
 
-<div id="checkboxDropdown" style="display:none; margin:10px 0;">
-  <form id="graficoForm">
-    <label><input type="checkbox" name="variaveis" value="municipio"> Município do Fato</label><br>
-    <label><input type="checkbox" name="variaveis" value="regiao"> Região Geográfica</label><br>
-    <label><input type="checkbox" name="variaveis" value="natureza"> Natureza</label><br>
-    <label><input type="checkbox" name="variaveis" value="data"> Data dos Ocorridos</label><br>
-    <label><input type="checkbox" name="variaveis" value="ano"> Ano</label><br>
-    <label><input type="checkbox" name="variaveis" value="sexo"> Sexo</label><br>
-    <label><input type="checkbox" name="variaveis" value="idade"> Idade SENASP</label><br>
-    <label><input type="checkbox" name="variaveis" value="envolvidos"> Total de Envolvidos</label><br>
-    <button type="submit">Ver Gráficos</button> 
-    
-    
-  </form>
-</div>
-<a href="/"><button>Voltar para o Inicio</button></a>
-<div id="resultado">
-  <!-- Os gráficos e resumos serão injetados aqui -->
-</div>
+    <div id="checkboxDropdown" style="display:none;">
+        <div class="card">
+            <form id="graficoForm">
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="variaveis" value="municipio"> Município do Fato</label>
+                    <label><input type="checkbox" name="variaveis" value="regiao"> Região Geográfica</label>
+                    <label><input type="checkbox" name="variaveis" value="natureza"> Natureza</label>
+                    <label><input type="checkbox" name="variaveis" value="data"> Data dos Ocorridos</label>
+                    <label><input type="checkbox" name="variaveis" value="ano"> Ano</label>
+                    <label><input type="checkbox" name="variaveis" value="sexo"> Sexo</label>
+                    <label><input type="checkbox" name="variaveis" value="idade"> Idade SENASP</label>
+                    <label><input type="checkbox" name="variaveis" value="envolvidos"> Total de Envolvidos</label>
+                </div>
 
-<script>
-function toggleDropdown() {
-  const box = document.getElementById('checkboxDropdown');
-  box.style.display = (box.style.display === 'none') ? 'block' : 'none';
-}
+                <div class="botoes">
+                    <button type="submit" class="btn-primary">Ver Gráficos</button>
+                    <a href="/" class="btn-secondary">Voltar para o Início</a>
+                </div>
+            </form>
+        </div>
+    </div>
 
-document.getElementById('graficoForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  const variaveis = formData.getAll('variaveis');
+    <div id="resultado"></div>
 
-  if (variaveis.length === 0 || variaveis.length > 8) {
-    alert('Selecione entre 1 e 8 variáveis.');
-    return;
-  }
+    <script>
+        function toggleDropdown() {
+            const box = document.getElementById('checkboxDropdown');
+            box.style.display = (box.style.display === 'none') ? 'block' : 'none';
+        }
 
-  const response = await fetch('/gerar_graficos', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({variaveis: variaveis})
-  });
+        document.getElementById('graficoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const variaveis = formData.getAll('variaveis');
 
-  const html = await response.text();
-  document.getElementById('resultado').innerHTML = html;
-});
-</script>
+            if (variaveis.length === 0 || variaveis.length > 8) {
+                alert('Selecione entre 1 e 8 variáveis.');
+                return;
+            }
+
+            const response = await fetch('/gerar_graficos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ variaveis: variaveis })
+            });
+
+            const html = await response.text();
+            document.getElementById('resultado').innerHTML = html;
+        });
+    </script>
 </body>
 </html>

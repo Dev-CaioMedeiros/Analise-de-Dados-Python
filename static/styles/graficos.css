@@ -1,77 +1,117 @@
-* {
-    box-sizing: border-box;
+body {
     margin: 0;
     padding: 0;
-}
-
-body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(to right, #4683b4af, #4364f7);
-    color:  #e6e6e6;
-    height: 100vh;
+    color: #f2f2f2;
+
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-body, h2{
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #e6e6e6;
+    justify-content: center; /* Centraliza verticalmente */
+    min-height: 100vh;
     text-align: center;
-    margin-top: 20px;
 }
 
-button {
-    width: 10%;
+#checkboxDropdown {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+
+.titulo {
+    margin-top: 40px;
+    font-size: 2em;
+    text-align: center;
+}
+
+.toggle-button {
+    margin: 20px 0;
+    width: 220px;
     padding: 15px;
-    margin: 0px;
-    margin-bottom: 20px;
     background: #1E90FF;
-    color: #e6e6e6;
+    color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 14px;
     font-weight: bold;
     font-size: 1rem;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     transition: all 0.3s ease;
-    letter-spacing: 0.5px;
 }
 
-button:hover {
+.toggle-button:hover {
     background: #0b75d1;
     transform: scale(1.05);
 }
 
-.grafico-container, h3{
-    font-family: monospace;
-    font-size: 25px;
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px 40px;
+    width: 90%;
+    max-width: 500px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.grafico-container, h2{
-    font-family: monospace;
-    font-size: 25px;
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+}
+
+.checkbox-group label {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+    accent-color: #1E90FF;
+}
+
+.botoes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 12px;
     text-align: center;
-    margin-top: auto;
-}
-
-table {
-    margin: 0 auto;
-    border-collapse: collapse;
-}
-th, td {
-    padding: 8px 12px;
-    border: 1px solid #000000;
-    font-family: monospace;
-    font-size: 18px;
+    border-radius: 12px;
     font-weight: bold;
-}
-#grafico-container {
-    display: none;
-    text-align: center;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
 }
 
-.container {
-    max-width: 1000px;
-    margin: auto;
+.btn-primary {
+    background: #1E90FF;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0b75d1;
+    transform: scale(1.05);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #545b62;
+    transform: scale(1.05);
 }

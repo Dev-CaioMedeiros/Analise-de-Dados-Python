@@ -66,8 +66,8 @@ button:hover, .btn-voltar:hover {
     transform: scale(1.05);
 }
 
+
 .resultado-data {
-    background: rgba(255, 255, 255, 0.15);
     border-radius: 15px;
     padding: 20px 30px;
     backdrop-filter: blur(6px);
@@ -77,12 +77,15 @@ button:hover, .btn-voltar:hover {
     font-weight: bold;
     max-width: 800px;
     margin: 20px auto;
-    text-align: center;
+    text-align: center;
+}
+.resultado-data:not(:empty) {
+ background-color: rgba(255, 255, 255, 0.05);
 }
 
-
-.back-button {
-    margin-top: 20px;
+.back-button, a {
+    margin: auto;
+    margin-bottom: 20px;
 }
 
 .filtros-dados {
