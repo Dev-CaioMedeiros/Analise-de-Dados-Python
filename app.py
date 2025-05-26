@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-import io, base64, os, datetime, folium, json
+import os, datetime, folium, json
 import pandas as pd
 import matplotlib.pyplot as plt
 
