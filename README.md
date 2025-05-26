@@ -83,7 +83,3 @@ Ideal para pesquisadores, gestores públicos ou qualquer pessoa interessada em e
 Este projeto é de uso educacional e analítico, distribuído de forma livre para estudos, pesquisas e aprimoramentos.
 
 ## Desenvolvido com 🖥️ por Caio Medeiros.
-
-
-
-
