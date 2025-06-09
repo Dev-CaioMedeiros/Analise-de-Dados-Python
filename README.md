@@ -1,6 +1,6 @@
 # 📊 Painel de Violência Doméstica
 
-Este é um aplicativo web desenvolvido com **Flask** para análise e visualização de dados sobre violência doméstica a partir de um arquivo Excel. A ferramenta oferece **gráficos interativos**, **mapas** e **ferramentas de comparação** que permitem explorar os dados por município, região, data, natureza da ocorrência e muito mais.  
+Este é um Dashboard web desenvolvido com **Flask** para análise e visualização de dados sobre violência doméstica a partir de um arquivo Excel. A ferramenta oferece **gráficos interativos**, **mapas** e **ferramentas de comparação** que permitem explorar os dados por município, região, data, natureza da ocorrência e muito mais.  
 Ideal para pesquisadores, gestores públicos ou qualquer pessoa interessada em entender melhor os padrões da violência doméstica em Pernambuco.
 
 ---
